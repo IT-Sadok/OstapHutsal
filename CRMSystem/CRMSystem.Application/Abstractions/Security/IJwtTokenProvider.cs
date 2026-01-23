@@ -1,4 +1,5 @@
-﻿using CRMSystem.Application.Auth.Models;
+﻿using Common;
+using CRMSystem.Application.Auth.Models;
 using CRMSystem.Application.Common;
 using CRMSystem.Domain.Entities;
 

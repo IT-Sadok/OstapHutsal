@@ -1,7 +1,7 @@
 ﻿using CRMSystem.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 
-namespace CRMSystem.Infrastructure.Identity;
+namespace CRMSystem.Application.Identity;
 
 public class ApplicationUser : IdentityUser<Guid>
 {

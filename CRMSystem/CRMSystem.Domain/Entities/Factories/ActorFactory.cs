@@ -13,7 +13,7 @@ public static class ActorFactory
 
         var agent = new Agent
         {
-            IsActive = true,
+            Status = AgentStatus.Active,
             Actor = actor
         };
 

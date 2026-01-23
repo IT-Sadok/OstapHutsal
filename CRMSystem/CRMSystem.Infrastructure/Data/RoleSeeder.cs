@@ -1,13 +1,12 @@
-﻿using CRMSystem.Application.Abstractions.Persistence;
-using CRMSystem.Application.Abstractions.Persistence.Repositories;
+﻿using CRMSystem.Application.Abstractions.Persistence.Repositories;
 using CRMSystem.Application.Common.Authorization;
 using CRMSystem.Application.Common.Exceptions;
+using CRMSystem.Application.Identity;
 using CRMSystem.Domain.Entities.Factories;
-using CRMSystem.Infrastructure.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace CRMSystem.Infrastructure.Identity;
+namespace CRMSystem.Infrastructure.Data;
 
 public static class RoleSeeder
 {

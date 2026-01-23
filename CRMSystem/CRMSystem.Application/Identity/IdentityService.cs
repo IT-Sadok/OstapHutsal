@@ -1,45 +1,51 @@
-﻿using CRMSystem.Application.Abstractions.Identity;
+﻿using Common;
+using CRMSystem.Application.Abstractions.Identity;
+using CRMSystem.Application.Abstractions.Persistence;
+using CRMSystem.Application.Abstractions.Persistence.Repositories;
 using CRMSystem.Application.Auth;
 using CRMSystem.Application.Auth.Contracts;
 using CRMSystem.Application.Auth.Models;
 using CRMSystem.Application.Common;
 using CRMSystem.Domain.Enums;
-using CRMSystem.Infrastructure.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace CRMSystem.Infrastructure.Identity;
+namespace CRMSystem.Application.Identity;
 
 public class IdentityService : IIdentityService
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<ApplicationRole> _roleManager;
-    private readonly CrmDbContext _context;
+    private readonly IActorRepository _actorRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
     public IdentityService(UserManager<ApplicationUser> userManager,
         RoleManager<ApplicationRole> roleManager,
-        CrmDbContext context)
+        IActorRepository actorRepository,
+        IUnitOfWork unitOfWork)
     {
         _userManager = userManager;
         _roleManager = roleManager;
-        _context = context;
+        _actorRepository = actorRepository;
+        _unitOfWork = unitOfWork;
     }
 
-    public async Task<Result<UserLoginIdentity>> AuthenticateAsync(LoginRequest loginRequest)
+    public async Task<Result<UserLoginIdentity>> AuthenticateAsync(LoginRequest loginRequest,
+        CancellationToken cancellationToken = default)
     {
         var user = await _userManager.Users
             .Include(u => u.Actor)
             .ThenInclude(a => a.Agent)
             .Include(u => u.Actor)
             .ThenInclude(a => a.Client)
-            .FirstOrDefaultAsync(u => u.Email == loginRequest.Email);
+            .FirstOrDefaultAsync(u => u.Email == loginRequest.Email, cancellationToken);
 
         if (user is null)
             return Result<UserLoginIdentity>.Failure(AuthErrorCodes.InvalidEmail);
 
         var actor = user.Actor;
 
-        if (actor.Kind == ActorKind.Agent && (actor.Agent is null || !actor.Agent.IsActive))
+        if (actor.Kind == ActorKind.Agent && (actor.Agent is null || actor.Agent.Status != AgentStatus.Active))
             return Result<UserLoginIdentity>.Failure(AuthErrorCodes.UserInactive);
 
         if (actor is { Kind: ActorKind.Client, Client: null })
@@ -107,20 +113,20 @@ public class IdentityService : IIdentityService
         return Result<Guid>.Success(user.Id);
     }
 
-    public async Task<Result> DeleteUserAsync(Guid userId)
+    public async Task<Result> DeleteUserAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         var user = await _userManager.Users
             .Include(u => u.Actor)
             .ThenInclude(a => a.Agent)
             .Include(u => u.Actor)
             .ThenInclude(a => a.Client)
-            .FirstOrDefaultAsync(u => u.Id == userId);
+            .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
 
         if (user is null)
             return Result.Failure(AuthErrorCodes.InvalidId);
 
-        _context.Actors.Remove(user.Actor);
-        await _context.SaveChangesAsync();
+        _actorRepository.Remove(user.Actor);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Success();
     }

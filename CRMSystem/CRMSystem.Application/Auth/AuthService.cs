@@ -1,4 +1,5 @@
-﻿using CRMSystem.Application.Abstractions.Identity;
+﻿using Common;
+using CRMSystem.Application.Abstractions.Identity;
 using CRMSystem.Application.Abstractions.Persistence;
 using CRMSystem.Application.Abstractions.Persistence.Repositories;
 using CRMSystem.Application.Abstractions.Services;
@@ -34,9 +35,10 @@ public class AuthService : IAuthService
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<Result<string>> LoginAsync(LoginRequest loginRequest)
+    public async Task<Result<string>> LoginAsync(LoginRequest loginRequest,
+        CancellationToken cancellationToken = default)
     {
-        var result = await _identityService.AuthenticateAsync(loginRequest);
+        var result = await _identityService.AuthenticateAsync(loginRequest, cancellationToken);
 
         if (!result.IsSuccess)
         {

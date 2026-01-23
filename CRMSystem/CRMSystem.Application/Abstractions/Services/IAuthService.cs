@@ -1,11 +1,12 @@
-﻿using CRMSystem.Application.Auth.Contracts;
+﻿using Common;
+using CRMSystem.Application.Auth.Contracts;
 using CRMSystem.Application.Common;
 
 namespace CRMSystem.Application.Abstractions.Services;
 
 public interface IAuthService
 {
-    Task<Result<string>> LoginAsync(LoginRequest request);
+    Task<Result<string>> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default);
 
     Task<Result<Guid>> RegisterClientAsync(RegisterClientRequest request,
         CancellationToken cancellationToken = default);

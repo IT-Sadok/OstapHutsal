@@ -16,6 +16,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Common\Common.csproj"/>
         <ProjectReference Include="..\CRMSystem.Application\CRMSystem.Application.csproj"/>
         <ProjectReference Include="..\CRMSystem.Infrastructure\CRMSystem.Infrastructure.csproj"/>
     </ItemGroup>

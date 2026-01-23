@@ -13,9 +13,10 @@ public static class AuthEndpoints
 
         authGroup.MapPost("/login", async (
                 IAuthService authService,
-                LoginRequest request) =>
+                LoginRequest request,
+                CancellationToken cancellationToken) =>
             {
-                var result = await authService.LoginAsync(request);
+                var result = await authService.LoginAsync(request, cancellationToken);
 
                 return result.IsSuccess
                     ? Results.Ok(new LoginResponse(result.Value!))
@@ -26,9 +27,10 @@ public static class AuthEndpoints
 
         authGroup.MapPost("/clients", async (
                 IAuthService authService,
-                RegisterClientRequest request) =>
+                RegisterClientRequest request,
+                CancellationToken cancellationToken) =>
             {
-                var result = await authService.RegisterClientAsync(request);
+                var result = await authService.RegisterClientAsync(request, cancellationToken);
 
                 return result.IsSuccess
                     ? Results.Created($"/clients/{result.Value}", result.Value)
@@ -39,9 +41,10 @@ public static class AuthEndpoints
 
         authGroup.MapPost("/operators", async (
                 IAuthService authService,
-                RegisterAgentRequest request) =>
+                RegisterAgentRequest request,
+                CancellationToken cancellationToken) =>
             {
-                var result = await authService.RegisterOperatorAsync(request);
+                var result = await authService.RegisterOperatorAsync(request, cancellationToken);
 
                 return result.IsSuccess
                     ? Results.Created($"/operators/{result.Value}", result.Value)
@@ -52,9 +55,10 @@ public static class AuthEndpoints
 
         authGroup.MapPost("/admins", async (
                 IAuthService authService,
-                RegisterAgentRequest request) =>
+                RegisterAgentRequest request,
+                CancellationToken cancellationToken) =>
             {
-                var result = await authService.RegisterAdminAsync(request);
+                var result = await authService.RegisterAdminAsync(request, cancellationToken);
 
                 return result.IsSuccess
                     ? Results.Created($"/admins/{result.Value}", result.Value)

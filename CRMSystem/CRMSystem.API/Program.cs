@@ -8,7 +8,6 @@ using CRMSystem.Application.Abstractions.Identity;
 using CRMSystem.Application.Common.Authorization;
 using CRMSystem.Infrastructure;
 using CRMSystem.Infrastructure.Data;
-using CRMSystem.Infrastructure.Identity;
 using CRMSystem.Infrastructure.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;

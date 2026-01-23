@@ -1,4 +1,4 @@
-﻿using CRMSystem.Infrastructure.Identity;
+﻿using CRMSystem.Application.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
