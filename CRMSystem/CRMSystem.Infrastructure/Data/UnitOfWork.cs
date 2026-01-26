@@ -6,8 +6,6 @@ namespace CRMSystem.Infrastructure.Data;
 public class UnitOfWork : IUnitOfWork
 {
     private readonly CrmDbContext _context;
-    private bool _disposed;
-    // private IDbContextTransaction? _currentTransaction;
 
     public UnitOfWork(CrmDbContext context)
     {
