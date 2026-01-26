@@ -1,21 +1,12 @@
-using System.Security.Claims;
-using System.Text;
 using CRMSystem.API.Common.ErrorMapping;
-using CRMSystem.API.Endpoints;
-using CRMSystem.API.Endpoints.Auth;
+using CRMSystem.API.Common.Extensions;
 using CRMSystem.Application;
 using CRMSystem.Application.Abstractions.Identity;
-using CRMSystem.Application.Common.Authorization;
 using CRMSystem.Infrastructure;
-using CRMSystem.Infrastructure.Data;
-using CRMSystem.Infrastructure.Options;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 
 namespace CRMSystem.API;
 
-public class Program
+public static class Program
 {
     public static async Task Main(string[] args)
     {
@@ -28,50 +19,16 @@ public class Program
         builder.Services.AddApplication()
             .AddInfrastructure(builder.Configuration);
 
-        builder.Services.AddSwaggerGen(options =>
-        {
-            // Add security definition for JWT Bearer
-            options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
-            {
-                Name = "Authorization",
-                Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
-                Scheme = "Bearer",
-                BearerFormat = "JWT",
-                In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-                Description = "Enter JWT token in the format: Bearer {token}"
-            });
-
-            // Require JWT for all endpoints (optional, you can also decorate specific endpoints)
-            options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
-            {
-                {
-                    new Microsoft.OpenApi.Models.OpenApiSecurityScheme
-                    {
-                        Reference = new Microsoft.OpenApi.Models.OpenApiReference
-                        {
-                            Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
-                            Id = "Bearer"
-                        }
-                    },
-                    Array.Empty<string>() // roles can be checked via Authorize
-                }
-            });
-        });
-
+        builder.Services.ConfigureSwagger();
 
         var app = builder.Build();
 
-        // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
             app.UseSwaggerUI();
 
-            using var scope = app.Services.CreateScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<CrmDbContext>();
-            await dbContext.Database.MigrateAsync();
-
-            await RoleSeeder.SeedRolesAsync(scope.ServiceProvider);
+            await app.ApplyMigrationsAndSeedAsync();
         }
 
         app.UseHttpsRedirection();
@@ -79,7 +36,7 @@ public class Program
         app.UseAuthentication();
         app.UseAuthorization();
 
-        app.MapAuthEndpoints();
+        app.MapEndpoints();
 
         // temporary endpoint
         app.MapDelete("/resources/delete", async (

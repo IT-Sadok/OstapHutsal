@@ -12,10 +12,10 @@ public static class AuthErrorMapper
                 BadRequest(
                     errorCode,
                     "Invalid id."),
-            AuthErrorCodes.InvalidEmail =>
+            AuthErrorCodes.UserInvalid =>
                 Unauthorized(
                     errorCode,
-                    "Invalid email."),
+                    "Invalid user."),
 
             AuthErrorCodes.InvalidPassword =>
                 Unauthorized(
@@ -31,9 +31,6 @@ public static class AuthErrorMapper
                 Unauthorized(
                     errorCode,
                     "User account is locked."),
-
-            AuthErrorCodes.UserInactive =>
-                Results.Forbid(),
 
             AuthErrorCodes.EmailAlreadyExists =>
                 Conflict(

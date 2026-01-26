@@ -1,4 +1,5 @@
 ﻿using CRMSystem.API.Common.ErrorMapping;
+using CRMSystem.API.Common.Routes;
 using CRMSystem.Application.Abstractions.Services;
 using CRMSystem.Application.Auth.Contracts;
 using CRMSystem.Application.Common.Authorization;
@@ -9,9 +10,9 @@ public static class AuthEndpoints
 {
     public static void MapAuthEndpoints(this WebApplication app)
     {
-        var authGroup = app.MapGroup("/auth");
+        var authGroup = app.MapGroup(AuthRoutes.Base);
 
-        authGroup.MapPost("/login", async (
+        authGroup.MapPost(AuthRoutes.Login, async (
                 IAuthService authService,
                 LoginRequest request,
                 CancellationToken cancellationToken) =>
@@ -25,7 +26,7 @@ public static class AuthEndpoints
             .AllowAnonymous()
             .WithOpenApi();
 
-        authGroup.MapPost("/clients", async (
+        authGroup.MapPost(AuthRoutes.Clients, async (
                 IAuthService authService,
                 RegisterClientRequest request,
                 CancellationToken cancellationToken) =>
@@ -33,13 +34,13 @@ public static class AuthEndpoints
                 var result = await authService.RegisterClientAsync(request, cancellationToken);
 
                 return result.IsSuccess
-                    ? Results.Created($"/clients/{result.Value}", result.Value)
+                    ? Results.Created($"{AuthRoutes.Clients}/{result.Value}", result.Value)
                     : AuthErrorMapper.ToHttpResult(result.ErrorCode);
             })
             .AllowAnonymous()
             .WithOpenApi();
 
-        authGroup.MapPost("/operators", async (
+        authGroup.MapPost(AuthRoutes.Operators, async (
                 IAuthService authService,
                 RegisterAgentRequest request,
                 CancellationToken cancellationToken) =>
@@ -47,13 +48,13 @@ public static class AuthEndpoints
                 var result = await authService.RegisterOperatorAsync(request, cancellationToken);
 
                 return result.IsSuccess
-                    ? Results.Created($"/operators/{result.Value}", result.Value)
+                    ? Results.Created($"{AuthRoutes.Operators}/{result.Value}", result.Value)
                     : AuthErrorMapper.ToHttpResult(result.ErrorCode);
             })
-            .RequireAuthorization(policy => policy.RequireRole(Roles.SuperAdmin, Roles.Admin))
+            .RequireAuthorization(Policies.Admin)
             .WithOpenApi();
 
-        authGroup.MapPost("/admins", async (
+        authGroup.MapPost(AuthRoutes.Admins, async (
                 IAuthService authService,
                 RegisterAgentRequest request,
                 CancellationToken cancellationToken) =>
@@ -61,10 +62,10 @@ public static class AuthEndpoints
                 var result = await authService.RegisterAdminAsync(request, cancellationToken);
 
                 return result.IsSuccess
-                    ? Results.Created($"/admins/{result.Value}", result.Value)
+                    ? Results.Created($"{AuthRoutes.Admins}/{result.Value}", result.Value)
                     : AuthErrorMapper.ToHttpResult(result.ErrorCode);
             })
-            .RequireAuthorization(policy => policy.RequireRole(Roles.SuperAdmin))
+            .RequireAuthorization(Policies.SuperAdmin)
             .WithOpenApi();
     }
 }

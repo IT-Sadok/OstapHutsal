@@ -38,18 +38,14 @@ public class IdentityService : IIdentityService
             .ThenInclude(a => a.Agent)
             .Include(u => u.Actor)
             .ThenInclude(a => a.Client)
-            .FirstOrDefaultAsync(u => u.Email == loginRequest.Email, cancellationToken);
+            .Where(u => u.Email == loginRequest.Email)
+            .Where(u => (u.Actor.Kind == ActorKind.Agent && u.Actor.Agent != null &&
+                         u.Actor.Agent.Status == AgentStatus.Active)
+                        || (u.Actor.Kind == ActorKind.Client && u.Actor.Client != null))
+            .FirstOrDefaultAsync(cancellationToken);
 
         if (user is null)
-            return Result<UserLoginIdentity>.Failure(AuthErrorCodes.InvalidEmail);
-
-        var actor = user.Actor;
-
-        if (actor.Kind == ActorKind.Agent && (actor.Agent is null || actor.Agent.Status != AgentStatus.Active))
-            return Result<UserLoginIdentity>.Failure(AuthErrorCodes.UserInactive);
-
-        if (actor is { Kind: ActorKind.Client, Client: null })
-            return Result<UserLoginIdentity>.Failure(AuthErrorCodes.UserInactive);
+            return Result<UserLoginIdentity>.Failure(AuthErrorCodes.UserInvalid);
 
         if (await _userManager.IsLockedOutAsync(user))
             return Result<UserLoginIdentity>.Failure(AuthErrorCodes.UserLocked);

@@ -12,6 +12,7 @@ public sealed class CrmDbContext : IdentityDbContext<ApplicationUser, Applicatio
 {
     public CrmDbContext(DbContextOptions<CrmDbContext> options) : base(options)
     {
+        Database.EnsureCreated();
     }
 
     public DbSet<Actor> Actors => Set<Actor>();

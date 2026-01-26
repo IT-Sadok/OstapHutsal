@@ -16,22 +16,16 @@ public class AuthService : IAuthService
     private readonly IIdentityService _identityService;
     private readonly IJwtTokenProvider _jwtTokenProvider;
     private readonly IActorRepository _actorRepository;
-    private readonly IAgentRepository _agentRepository;
-    private readonly IClientRepository _clientRepository;
     private readonly IUnitOfWork _unitOfWork;
 
     public AuthService(IIdentityService identityService,
         IJwtTokenProvider jwtTokenProvider,
         IActorRepository actorRepository,
-        IAgentRepository agentRepository,
-        IClientRepository clientRepository,
         IUnitOfWork unitOfWork)
     {
         _identityService = identityService;
         _jwtTokenProvider = jwtTokenProvider;
         _actorRepository = actorRepository;
-        _agentRepository = agentRepository;
-        _clientRepository = clientRepository;
         _unitOfWork = unitOfWork;
     }
 
@@ -57,10 +51,10 @@ public class AuthService : IAuthService
     public async Task<Result<Guid>> RegisterClientAsync(RegisterClientRequest request,
         CancellationToken cancellationToken = default)
     {
-        await _unitOfWork.BeginTransactionAsync(cancellationToken);
+        var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
 
         var actor = ActorFactory.CreateClientActor(request.Phone, request.Address);
-        await _actorRepository.AddAsync(actor);
+        await _actorRepository.AddAsync(actor, cancellationToken);
 
         var userRegisterIdentity = new UserRegisterIdentity
         (
@@ -74,15 +68,14 @@ public class AuthService : IAuthService
 
         var userIdentityResult = await _identityService.CreateUserAsync(userRegisterIdentity);
 
-
         if (!userIdentityResult.IsSuccess)
         {
-            await _unitOfWork.RollbackTransactionAsync(cancellationToken);
+            await transaction.RollbackAsync(cancellationToken);
             return Result<Guid>.Failure(userIdentityResult.ErrorCode);
         }
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
-        await _unitOfWork.CommitTransactionAsync(cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
         return Result<Guid>.Success(userIdentityResult.Value);
     }
 
@@ -101,7 +94,7 @@ public class AuthService : IAuthService
     private async Task<Result<Guid>> RegisterAgentAsync(RegisterAgentRequest request, string role,
         CancellationToken cancellationToken = default)
     {
-        await _unitOfWork.BeginTransactionAsync(cancellationToken);
+        var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
 
         var actor = ActorFactory.CreateAgentActor();
         await _actorRepository.AddAsync(actor);
@@ -121,12 +114,12 @@ public class AuthService : IAuthService
 
         if (!userIdentityResult.IsSuccess)
         {
-            await _unitOfWork.RollbackTransactionAsync(cancellationToken);
+            await transaction.RollbackAsync(cancellationToken);
             return Result<Guid>.Failure(userIdentityResult.ErrorCode);
         }
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
-        await _unitOfWork.CommitTransactionAsync(cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
         return Result<Guid>.Success(userIdentityResult.Value);
     }
 }

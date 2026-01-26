@@ -11,39 +11,41 @@ public class GenericRepository<TEntity, TKey> : IGenericRepository<TEntity, TKey
 {
     private readonly DbSet<TEntity> _dbSet;
 
-    public GenericRepository(CrmDbContext crmDbContext)
+    protected GenericRepository(CrmDbContext crmDbContext)
     {
         _dbSet = crmDbContext.Set<TEntity>();
     }
 
-    public virtual async Task<TEntity?> GetByIdAsync(TKey id)
+    public virtual async Task<TEntity?> GetByIdAsync(TKey id, CancellationToken cancellationToken = default)
     {
-        return await _dbSet.FindAsync(id);
+        return await _dbSet.FindAsync(id, cancellationToken);
     }
 
-    public virtual async Task<IEnumerable<TEntity>> GetAllAsync()
+    public virtual async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return await _dbSet.ToListAsync();
+        return await _dbSet.ToListAsync(cancellationToken);
     }
 
-    public virtual async Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate)
+    public virtual async Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate,
+        CancellationToken cancellationToken = default)
     {
-        return await _dbSet.Where(predicate).ToListAsync();
+        return await _dbSet.Where(predicate).ToListAsync(cancellationToken);
     }
 
-    public virtual async Task<TEntity?> SingleOrDefaultAsync(Expression<Func<TEntity, bool>> predicate)
+    public virtual async Task<TEntity?> SingleOrDefaultAsync(Expression<Func<TEntity, bool>> predicate,
+        CancellationToken cancellationToken = default)
     {
-        return await _dbSet.SingleOrDefaultAsync(predicate);
+        return await _dbSet.SingleOrDefaultAsync(predicate, cancellationToken);
     }
 
-    public virtual async Task AddAsync(TEntity entity)
+    public virtual async Task AddAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
-        await _dbSet.AddAsync(entity);
+        await _dbSet.AddAsync(entity, cancellationToken);
     }
 
-    public async Task AddRangeAsync(IEnumerable<TEntity> entities)
+    public async Task AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
     {
-        await _dbSet.AddRangeAsync(entities);
+        await _dbSet.AddRangeAsync(entities, cancellationToken);
     }
 
     public virtual void Update(TEntity entity)
@@ -61,19 +63,20 @@ public class GenericRepository<TEntity, TKey> : IGenericRepository<TEntity, TKey
         _dbSet.RemoveRange(entities);
     }
 
-    public virtual async Task<bool> ExistsAsync(TKey id)
+    public virtual async Task<bool> ExistsAsync(TKey id, CancellationToken cancellationToken = default)
     {
-        var entity = await _dbSet.FindAsync(id);
+        var entity = await _dbSet.FindAsync(id, cancellationToken);
         return entity != null;
     }
 
-    public virtual async Task<int> CountAsync()
+    public virtual async Task<int> CountAsync(CancellationToken cancellationToken = default)
     {
-        return await _dbSet.CountAsync();
+        return await _dbSet.CountAsync(cancellationToken);
     }
 
-    public virtual async Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate)
+    public virtual async Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate,
+        CancellationToken cancellationToken = default)
     {
-        return await _dbSet.CountAsync(predicate);
+        return await _dbSet.CountAsync(predicate, cancellationToken);
     }
 }
