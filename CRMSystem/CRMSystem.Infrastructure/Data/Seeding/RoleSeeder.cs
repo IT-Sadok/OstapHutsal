@@ -6,7 +6,7 @@ using CRMSystem.Domain.Entities.Factories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace CRMSystem.Infrastructure.Data;
+namespace CRMSystem.Infrastructure.Data.Seeding;
 
 public static class RoleSeeder
 {

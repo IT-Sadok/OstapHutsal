@@ -113,6 +113,15 @@ public static class InfrastructureExtensions
         services.AddScoped<IActorRepository, ActorRepository>();
         services.AddScoped<IClientRepository, ClientRepository>();
         services.AddScoped<IAgentRepository, AgentRepository>();
+        services.AddScoped<ITicketRepository, TicketRepository>();
+        services.AddScoped<ITicketCategoryRepository, TicketCategoryRepository>();
+        services.AddScoped<ICommunicationChannelRepository, CommunicationChannelRepository>();
+        services.AddScoped<IAgentNotificationRepository, AgentNotificationRepository>();
+        services.AddScoped<IOrderRepository, OrderRepository>();
+        services.AddScoped<IPriorityRepository, PriorityRepository>();
+        services.AddScoped<ITicketHistoryRepository, TicketHistoryRepository>();
+        services.AddScoped<ITicketMessageRepository, TicketMessageRepository>();
+
         services.AddScoped<IIdentityService, IdentityService>();
         services.AddTransient<IJwtTokenProvider, JwtTokenProvider>();
     }

@@ -17,6 +17,14 @@ public sealed class CrmDbContext : IdentityDbContext<ApplicationUser, Applicatio
     public DbSet<Actor> Actors => Set<Actor>();
     public DbSet<Agent> Agents => Set<Agent>();
     public DbSet<Client> Clients => Set<Client>();
+    public DbSet<Ticket> Tickets => Set<Ticket>();
+    public DbSet<TicketCategory> TicketCategories => Set<TicketCategory>();
+    public DbSet<Priority> Priorities => Set<Priority>();
+    public DbSet<CommunicationChannel> Channels => Set<CommunicationChannel>();
+    public DbSet<Order> Orders => Set<Order>();
+    public DbSet<TicketMessage> TicketMessages => Set<TicketMessage>();
+    public DbSet<TicketHistory> TicketHistory => Set<TicketHistory>();
+    public DbSet<AgentNotification> Notifications => Set<AgentNotification>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

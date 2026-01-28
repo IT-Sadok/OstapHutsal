@@ -1,5 +1,6 @@
 ﻿using CRMSystem.API.Endpoints.Auth;
 using CRMSystem.Infrastructure.Data;
+using CRMSystem.Infrastructure.Data.Seeding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
@@ -14,6 +15,7 @@ public static class WebApplicationExtensions
         await dbContext.Database.MigrateAsync();
 
         await RoleSeeder.SeedRolesAsync(scope.ServiceProvider);
+        await TicketCategorySeeder.SeedTicketCategoriesAsync(scope.ServiceProvider);
     }
 
     public static void MapEndpoints(this WebApplication app)
