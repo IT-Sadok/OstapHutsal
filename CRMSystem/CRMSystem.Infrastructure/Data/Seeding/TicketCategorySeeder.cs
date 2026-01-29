@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace CRMSystem.Infrastructure.Data.Seeding;
 
-public class TicketCategorySeeder
+public static class TicketCategorySeeder
 {
     public static async Task SeedTicketCategoriesAsync(IServiceProvider serviceProvider)
     {

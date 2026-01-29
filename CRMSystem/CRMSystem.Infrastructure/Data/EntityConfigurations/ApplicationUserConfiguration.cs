@@ -22,6 +22,9 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
         builder.HasIndex(u => u.ActorId)
             .IsUnique();
 
+        builder.HasIndex(u => u.Email)
+            .IsUnique();
+
         builder.HasOne(u => u.Actor)
             .WithOne()
             .HasForeignKey<ApplicationUser>(u => u.ActorId)

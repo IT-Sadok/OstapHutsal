@@ -15,14 +15,14 @@ public class Ticket : AuditableEntity
     public Guid CategoryId { get; set; }
     public Guid PriorityId { get; set; }
     public Guid ChannelId { get; set; }
-    public Guid? AssignedToUserId { get; set; }
+    public Guid? AssignedToAgentId { get; set; }
     public Guid? OrderId { get; set; }
 
     public Client Client { get; set; } = null!;
     public TicketCategory Category { get; set; } = null!;
     public Priority Priority { get; set; } = null!;
     public CommunicationChannel CommunicationChannel { get; set; } = null!;
-    public Agent? Agent { get; set; }
+    public Agent? AssignedToAgent { get; set; }
     public Order? Order { get; set; }
     public ICollection<TicketMessage> Messages { get; set; } = new List<TicketMessage>();
     public ICollection<TicketHistory> History { get; set; } = new List<TicketHistory>();

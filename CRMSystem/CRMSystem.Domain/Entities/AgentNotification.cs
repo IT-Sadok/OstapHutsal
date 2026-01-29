@@ -9,9 +9,9 @@ public class AgentNotification : CreatableEntity
     public string? Payload { get; set; }
     public AgentNotificationReadState ReadState { get; set; } = AgentNotificationReadState.Unread;
 
-    public Guid TicketId { get; set; }
-    public Guid? AgentId { get; set; }
+    public Guid? TicketId { get; set; }
+    public Guid AgentId { get; set; }
 
-    public Agent Agent { get; set; } = null!;
     public Ticket? Ticket { get; set; }
+    public Agent Agent { get; set; } = null!;
 }

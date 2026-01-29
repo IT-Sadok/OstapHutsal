@@ -34,5 +34,13 @@ public sealed class CrmDbContext : IdentityDbContext<ApplicationUser, Applicatio
         builder.ApplyConfiguration(new ClientEntityConfiguration());
         builder.ApplyConfiguration(new AgentEntityConfiguration());
         builder.ApplyConfiguration(new ApplicationUserConfiguration());
+        builder.ApplyConfiguration(new TicketEntityConfiguration());
+        builder.ApplyConfiguration(new TicketCategoryEntityConfiguration());
+        builder.ApplyConfiguration(new PriorityEntityConfiguration());
+        builder.ApplyConfiguration(new OrderEntityConfiguration());
+        builder.ApplyConfiguration(new CommunicationChannelEntityConfiguration());
+        builder.ApplyConfiguration(new AgentNotificationEntityConfiguration());
+        builder.ApplyConfiguration(new TicketHistoryEntityConfiguration());
+        builder.ApplyConfiguration(new TicketMessageEntityConfiguration());
     }
 }

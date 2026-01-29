@@ -16,6 +16,7 @@ public static class WebApplicationExtensions
 
         await RoleSeeder.SeedRolesAsync(scope.ServiceProvider);
         await TicketCategorySeeder.SeedTicketCategoriesAsync(scope.ServiceProvider);
+        await PrioritySeeder.SeedPrioritiesAsync(scope.ServiceProvider);
     }
 
     public static void MapEndpoints(this WebApplication app)
