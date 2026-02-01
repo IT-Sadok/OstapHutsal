@@ -1,5 +1,4 @@
-﻿using CRMSystem.Application.Auth;
-using Microsoft.AspNetCore.Http;
+﻿using CRMSystem.Application.Features.Auth;
 
 namespace CRMSystem.API.Common.ErrorMapping;
 
@@ -9,72 +8,47 @@ public static class AuthErrorMapper
         errorCode switch
         {
             AuthErrorCodes.InvalidId =>
-                BadRequest(
-                    errorCode,
-                    "Invalid id."),
+                Problem(errorCode, StatusCodes.Status400BadRequest, "Invalid id."),
+
             AuthErrorCodes.UserInvalid =>
-                Unauthorized(
-                    errorCode,
-                    "Invalid user."),
+                Problem(errorCode, StatusCodes.Status401Unauthorized, "Invalid user."),
 
             AuthErrorCodes.InvalidPassword =>
-                Unauthorized(
-                    errorCode,
-                    "Invalid password."),
+                Problem(errorCode, StatusCodes.Status401Unauthorized, "Invalid password."),
 
             AuthErrorCodes.EmailNotConfirmed =>
-                Unauthorized(
-                    errorCode,
-                    "Email is not confirmed."),
+                Problem(errorCode, StatusCodes.Status401Unauthorized, "Email is not confirmed."),
 
             AuthErrorCodes.UserLocked =>
-                Unauthorized(
-                    errorCode,
-                    "User account is locked."),
+                Problem(errorCode, StatusCodes.Status401Unauthorized, "User account is locked."),
 
             AuthErrorCodes.EmailAlreadyExists =>
-                Conflict(
-                    errorCode,
-                    "Email already exists."),
+                Problem(errorCode, StatusCodes.Status409Conflict, "Email already exists."),
 
             AuthErrorCodes.RoleNotFound =>
-                BadRequest(
-                    errorCode,
-                    "Role not found."),
+                Problem(errorCode, StatusCodes.Status400BadRequest, "Role not found."),
 
             AuthErrorCodes.UserCreationFailed =>
-                Results.Problem(
-                    title: "User creation failed.",
-                    statusCode: StatusCodes.Status500InternalServerError),
+                Problem(errorCode, StatusCodes.Status500InternalServerError, "User creation failed."),
 
             AuthErrorCodes.AssigningRoleFailed =>
-                Results.Problem(
-                    title: "Assigning role failed.",
-                    statusCode: StatusCodes.Status500InternalServerError),
+                Problem(errorCode, StatusCodes.Status500InternalServerError, "Assigning role failed."),
 
             AuthErrorCodes.JwtTokenGenerationFailed =>
-                Results.Problem(
-                    title: "JWT token generation failed.",
-                    statusCode: StatusCodes.Status500InternalServerError),
+                Problem(errorCode, StatusCodes.Status500InternalServerError, "JWT token generation failed."),
 
             _ =>
-                Results.Problem(
-                    title: "Unknown authentication error.",
-                    statusCode: StatusCodes.Status500InternalServerError)
+                Problem("unknown", StatusCodes.Status500InternalServerError, "Unknown authentication error.")
         };
 
-    private static IResult Unauthorized(string code, string message) =>
-        Results.Json(
-            new ErrorResponse(code, message),
-            statusCode: StatusCodes.Status401Unauthorized);
-
-    private static IResult BadRequest(string code, string message) =>
-        Results.Json(
-            new ErrorResponse(code, message),
-            statusCode: StatusCodes.Status400BadRequest);
-
-    private static IResult Conflict(string code, string message) =>
-        Results.Json(
-            new ErrorResponse(code, message),
-            statusCode: StatusCodes.Status409Conflict);
+    private static IResult Problem(string code, int statusCode, string title)
+    {
+        return Results.Problem(
+            title: title,
+            statusCode: statusCode,
+            extensions: new Dictionary<string, object?>
+            {
+                ["code"] = code
+            });
+    }
 }

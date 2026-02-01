@@ -2,10 +2,9 @@
 using CRMSystem.Application.Abstractions.Identity;
 using CRMSystem.Application.Abstractions.Persistence;
 using CRMSystem.Application.Abstractions.Persistence.Repositories;
-using CRMSystem.Application.Auth;
-using CRMSystem.Application.Auth.Contracts;
-using CRMSystem.Application.Auth.Models;
-using CRMSystem.Application.Common;
+using CRMSystem.Application.Features.Auth;
+using CRMSystem.Application.Features.Auth.Contracts;
+using CRMSystem.Application.Features.Auth.Models;
 using CRMSystem.Domain.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

@@ -184,7 +184,7 @@ namespace CRMSystem.Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("AgentId")
+                    b.Property<Guid>("ActorId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
@@ -204,7 +204,7 @@ namespace CRMSystem.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AgentId");
+                    b.HasIndex("ActorId");
 
                     b.HasIndex("TicketId");
 
@@ -324,7 +324,7 @@ namespace CRMSystem.Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("AssignedToAgentId")
+                    b.Property<Guid?>("AssignedToActorId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("CategoryId")
@@ -367,7 +367,7 @@ namespace CRMSystem.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AssignedToAgentId");
+                    b.HasIndex("AssignedToActorId");
 
                     b.HasIndex("CategoryId");
 
@@ -620,9 +620,9 @@ namespace CRMSystem.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("CRMSystem.Domain.Entities.AgentNotification", b =>
                 {
-                    b.HasOne("CRMSystem.Domain.Entities.Agent", "Agent")
+                    b.HasOne("CRMSystem.Domain.Entities.Actor", "Actor")
                         .WithMany("Notifications")
-                        .HasForeignKey("AgentId")
+                        .HasForeignKey("ActorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -631,7 +631,7 @@ namespace CRMSystem.Infrastructure.Data.Migrations
                         .HasForeignKey("TicketId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.Navigation("Agent");
+                    b.Navigation("Actor");
 
                     b.Navigation("Ticket");
                 });
@@ -660,9 +660,9 @@ namespace CRMSystem.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("CRMSystem.Domain.Entities.Ticket", b =>
                 {
-                    b.HasOne("CRMSystem.Domain.Entities.Agent", "AssignedToAgent")
+                    b.HasOne("CRMSystem.Domain.Entities.Actor", "AssignedToActor")
                         .WithMany("Tickets")
-                        .HasForeignKey("AssignedToAgentId")
+                        .HasForeignKey("AssignedToActorId")
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("CRMSystem.Domain.Entities.TicketCategory", "Category")
@@ -694,7 +694,7 @@ namespace CRMSystem.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("AssignedToAgent");
+                    b.Navigation("AssignedToActor");
 
                     b.Navigation("Category");
 
@@ -812,10 +812,7 @@ namespace CRMSystem.Infrastructure.Data.Migrations
                     b.Navigation("History");
 
                     b.Navigation("Messages");
-                });
 
-            modelBuilder.Entity("CRMSystem.Domain.Entities.Agent", b =>
-                {
                     b.Navigation("Notifications");
 
                     b.Navigation("Tickets");

@@ -1,4 +1,6 @@
-﻿using CRMSystem.Application.Identity;
+﻿using CRMSystem.Application.Abstractions.DomainEvents;
+using CRMSystem.Application.Identity;
+using CRMSystem.Domain.DomainEvents;
 using CRMSystem.Domain.Entities;
 using CRMSystem.Domain.Entities.Base;
 using CRMSystem.Infrastructure.Data.EntityConfigurations;
@@ -10,8 +12,12 @@ namespace CRMSystem.Infrastructure.Data;
 
 public sealed class CrmDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
 {
-    public CrmDbContext(DbContextOptions<CrmDbContext> options) : base(options)
+    private readonly IDomainEventsDispatcher _domainEventsDispatcher;
+
+    public CrmDbContext(DbContextOptions<CrmDbContext> options, IDomainEventsDispatcher domainEventsDispatcher) :
+        base(options)
     {
+        _domainEventsDispatcher = domainEventsDispatcher;
     }
 
     public DbSet<Actor> Actors => Set<Actor>();
@@ -24,7 +30,7 @@ public sealed class CrmDbContext : IdentityDbContext<ApplicationUser, Applicatio
     public DbSet<Order> Orders => Set<Order>();
     public DbSet<TicketMessage> TicketMessages => Set<TicketMessage>();
     public DbSet<TicketHistory> TicketHistory => Set<TicketHistory>();
-    public DbSet<AgentNotification> Notifications => Set<AgentNotification>();
+    public DbSet<ActorNotification> Notifications => Set<ActorNotification>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -42,5 +48,30 @@ public sealed class CrmDbContext : IdentityDbContext<ApplicationUser, Applicatio
         builder.ApplyConfiguration(new AgentNotificationEntityConfiguration());
         builder.ApplyConfiguration(new TicketHistoryEntityConfiguration());
         builder.ApplyConfiguration(new TicketMessageEntityConfiguration());
+    }
+
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        var result = await base.SaveChangesAsync(cancellationToken);
+
+        await PublishDomainEvents();
+
+        return result;
+    }
+
+    private async Task PublishDomainEvents()
+    {
+        var domainEvents = ChangeTracker
+            .Entries<BaseEntity<Guid>>()
+            .Select(entry => entry.Entity)
+            .SelectMany(entity =>
+            {
+                List<IDomainEvent> domainEvents = entity.DomainEvents.ToList();
+                entity.ClearDomainEvents();
+                return domainEvents;
+            })
+            .ToList();
+
+        await _domainEventsDispatcher.DispatchAsync(domainEvents);
     }
 }

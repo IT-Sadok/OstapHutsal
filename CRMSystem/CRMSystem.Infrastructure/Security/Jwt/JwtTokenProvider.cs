@@ -1,10 +1,10 @@
 ﻿using System.Security.Claims;
 using System.Text;
 using Common;
-using CRMSystem.Application.Abstractions.Services;
-using CRMSystem.Application.Auth;
-using CRMSystem.Application.Auth.Models;
-using CRMSystem.Application.Common;
+using CRMSystem.Application.Abstractions.Security;
+using CRMSystem.Application.Common.Security;
+using CRMSystem.Application.Features.Auth;
+using CRMSystem.Application.Features.Auth.Models;
 using CRMSystem.Infrastructure.Options;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
@@ -32,7 +32,7 @@ internal sealed class JwtTokenProvider : IJwtTokenProvider
             List<Claim> claims =
             [
                 new Claim(JwtRegisteredClaimNames.Sub, userLoginIdentity.UserId.ToString()),
-                new Claim(nameof(userLoginIdentity.ActorId), userLoginIdentity.ActorId.ToString()),
+                new Claim(AppClaimTypes.ActorId, userLoginIdentity.ActorId.ToString()),
             ];
 
             claims.AddRange(userLoginIdentity.Roles.Select(r => new Claim(ClaimTypes.Role, r)));

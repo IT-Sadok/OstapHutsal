@@ -28,7 +28,7 @@ public class TicketEntityConfiguration : IEntityTypeConfiguration<Ticket>
             .HasColumnType("jsonb");
 
         builder.HasIndex(t => t.Status);
-        builder.HasIndex(t => t.AssignedToAgentId);
+        builder.HasIndex(t => t.AssignedToActorId);
         builder.HasIndex(t => t.ClientId);
         builder.HasIndex(t => t.CategoryId);
         builder.HasIndex(t => t.PriorityId);
@@ -55,9 +55,9 @@ public class TicketEntityConfiguration : IEntityTypeConfiguration<Ticket>
             .HasForeignKey(t => t.ChannelId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasOne(t => t.AssignedToAgent)
+        builder.HasOne(t => t.AssignedToActor)
             .WithMany(a => a.Tickets)
-            .HasForeignKey(t => t.AssignedToAgentId)
+            .HasForeignKey(t => t.AssignedToActorId)
             .OnDelete(DeleteBehavior.SetNull);
 
         builder.HasOne(t => t.Order)

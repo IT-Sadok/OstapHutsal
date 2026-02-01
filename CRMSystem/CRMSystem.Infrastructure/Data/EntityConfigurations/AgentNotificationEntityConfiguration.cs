@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CRMSystem.Infrastructure.Data.EntityConfigurations;
 
-public class AgentNotificationEntityConfiguration : IEntityTypeConfiguration<AgentNotification>
+public class AgentNotificationEntityConfiguration : IEntityTypeConfiguration<ActorNotification>
 {
-    public void Configure(EntityTypeBuilder<AgentNotification> builder)
+    public void Configure(EntityTypeBuilder<ActorNotification> builder)
     {
         builder.ToTable("agent_notifications");
 
@@ -23,9 +23,9 @@ public class AgentNotificationEntityConfiguration : IEntityTypeConfiguration<Age
             .IsRequired()
             .HasConversion<int>();
 
-        builder.HasOne(n => n.Agent)
+        builder.HasOne(n => n.Actor)
             .WithMany(a => a.Notifications)
-            .HasForeignKey(n => n.AgentId)
+            .HasForeignKey(n => n.ActorId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne(n => n.Ticket)

@@ -1,6 +1,12 @@
 ﻿using CRMSystem.API.Endpoints.Auth;
+using CRMSystem.API.Endpoints.Tickets;
+using CRMSystem.API.SignalR;
+using CRMSystem.API.SignalR.Hubs;
+using CRMSystem.Application.Abstractions.SignalR;
+using CRMSystem.Application.SignalR.Protocol;
 using CRMSystem.Infrastructure.Data;
 using CRMSystem.Infrastructure.Data.Seeding;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
@@ -17,11 +23,13 @@ public static class WebApplicationExtensions
         await RoleSeeder.SeedRolesAsync(scope.ServiceProvider);
         await TicketCategorySeeder.SeedTicketCategoriesAsync(scope.ServiceProvider);
         await PrioritySeeder.SeedPrioritiesAsync(scope.ServiceProvider);
+        await CommunicationChannelSeeder.SeedChannelsAsync(scope.ServiceProvider);
     }
 
     public static void MapEndpoints(this WebApplication app)
     {
         app.MapAuthEndpoints();
+        app.MapTicketsEndpoints();
     }
 
     public static void ConfigureSwagger(this IServiceCollection services)
@@ -54,5 +62,17 @@ public static class WebApplicationExtensions
                 }
             });
         });
+    }
+
+    public static void ConfigureSignalR(this IServiceCollection services)
+    {
+        services.AddSignalR();
+        services.AddSingleton<IRealtimeNotifier, RealtimeNotifier>();
+        services.AddSingleton<IUserIdProvider, ActorIdUserIdProvider>();
+    }
+
+    public static void MapSignalRHubs(this WebApplication app)
+    {
+        app.MapHub<NotificationsHub>(HubRoutes.Notifications);
     }
 }
