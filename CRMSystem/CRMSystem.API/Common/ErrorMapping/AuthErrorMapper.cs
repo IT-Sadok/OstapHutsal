@@ -1,17 +1,22 @@
-﻿using CRMSystem.Application.Features.Auth;
+﻿using CRMSystem.Application.Common.Errors;
+using CRMSystem.Application.Features.Auth;
 
 namespace CRMSystem.API.Common.ErrorMapping;
 
 public static class AuthErrorMapper
 {
-    public static IResult ToHttpResult(string errorCode) =>
-        errorCode switch
+    public static IResult ToHttpResult(string errorCode)
+    {
+        var commonResult = CommonErrorMapper.TryMap(errorCode);
+        if (commonResult is not null)
+        {
+            return commonResult;
+        }
+
+        var featureResult = errorCode switch
         {
             AuthErrorCodes.InvalidId =>
                 Problem(errorCode, StatusCodes.Status400BadRequest, "Invalid id."),
-
-            AuthErrorCodes.UserInvalid =>
-                Problem(errorCode, StatusCodes.Status401Unauthorized, "Invalid user."),
 
             AuthErrorCodes.InvalidPassword =>
                 Problem(errorCode, StatusCodes.Status401Unauthorized, "Invalid password."),
@@ -37,18 +42,25 @@ public static class AuthErrorMapper
             AuthErrorCodes.JwtTokenGenerationFailed =>
                 Problem(errorCode, StatusCodes.Status500InternalServerError, "JWT token generation failed."),
 
-            _ =>
-                Problem("unknown", StatusCodes.Status500InternalServerError, "Unknown authentication error.")
+            _ => null
         };
 
-    private static IResult Problem(string code, int statusCode, string title)
-    {
-        return Results.Problem(
+        if (featureResult is not null)
+        {
+            return featureResult;
+        }
+
+        return Problem(CommonErrorCodes.InternalError,
+            StatusCodes.Status500InternalServerError,
+            "Unknown authentication error.");
+    }
+
+    private static IResult Problem(string code, int statusCode, string title) =>
+        Results.Problem(
             title: title,
             statusCode: statusCode,
             extensions: new Dictionary<string, object?>
             {
                 ["code"] = code
             });
-    }
 }

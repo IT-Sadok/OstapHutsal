@@ -4,9 +4,9 @@ using CRMSystem.Infrastructure.Data;
 
 namespace CRMSystem.Infrastructure.Repositories;
 
-public class TicketHistoryRepository : GenericRepository<TicketHistory, Guid>, ITicketHistoryRepository
+public class TicketSnapshotRepository : GenericRepository<TicketSnapshot, Guid>, ITicketSnapshotRepository
 {
-    public TicketHistoryRepository(CrmDbContext context) : base(context)
+    public TicketSnapshotRepository(CrmDbContext context) : base(context)
     {
     }
 }

@@ -2,6 +2,7 @@
 using CRMSystem.Application.Abstractions.Identity;
 using CRMSystem.Application.Abstractions.Persistence;
 using CRMSystem.Application.Abstractions.Persistence.Repositories;
+using CRMSystem.Application.Common.Errors;
 using CRMSystem.Application.Features.Auth;
 using CRMSystem.Application.Features.Auth.Contracts;
 using CRMSystem.Application.Features.Auth.Models;
@@ -44,7 +45,7 @@ public class IdentityService : IIdentityService
             .FirstOrDefaultAsync(cancellationToken);
 
         if (user is null)
-            return Result<UserLoginIdentity>.Failure(AuthErrorCodes.UserInvalid);
+            return Result<UserLoginIdentity>.Failure(CommonErrorCodes.NotFound);
 
         if (await _userManager.IsLockedOutAsync(user))
             return Result<UserLoginIdentity>.Failure(AuthErrorCodes.UserLocked);

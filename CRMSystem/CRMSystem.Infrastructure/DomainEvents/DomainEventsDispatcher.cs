@@ -1,11 +1,13 @@
 ﻿using System.Collections.Concurrent;
 using CRMSystem.Application.Abstractions.DomainEvents;
 using CRMSystem.Domain.DomainEvents;
+using CRMSystem.Domain.Entities.Base;
+using CRMSystem.Infrastructure.Data;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CRMSystem.Infrastructure.DomainEvents;
 
-internal sealed class DomainEventsDispatcher(IServiceProvider serviceProvider)
+internal sealed class DomainEventsDispatcher(IServiceProvider serviceProvider, CrmDbContext dbContext)
     : IDomainEventsDispatcher
 {
     private static readonly ConcurrentDictionary<Type, Type> HandlerTypeDictionary = new();
@@ -64,5 +66,21 @@ internal sealed class DomainEventsDispatcher(IServiceProvider serviceProvider)
         {
             await _handler.Handle((T)domainEvent, cancellationToken);
         }
+    }
+
+    public IReadOnlyList<IDomainEvent> CollectAndClear()
+    {
+        var events = dbContext.ChangeTracker
+            .Entries<BaseEntity<Guid>>()
+            .Select(e => e.Entity)
+            .SelectMany(entity =>
+            {
+                var domainEvents = entity.DomainEvents.ToList();
+                entity.ClearDomainEvents();
+                return domainEvents;
+            })
+            .ToList();
+
+        return events;
     }
 }

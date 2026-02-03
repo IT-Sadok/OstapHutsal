@@ -1,6 +1,5 @@
 ﻿using CRMSystem.Application.Abstractions.DomainEvents;
 using CRMSystem.Application.Abstractions.Services;
-using CRMSystem.Application.Auth;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 

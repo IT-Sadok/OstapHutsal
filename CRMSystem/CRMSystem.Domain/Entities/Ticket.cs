@@ -8,6 +8,7 @@ public class Ticket : AuditableEntity
     public string Title { get; set; } = null!;
     public string? Description { get; set; }
     public TicketStatus Status { get; set; } = TicketStatus.New;
+    public int Version { get; set; } = 1;
     public string? SourceDetails { get; set; }
     public DateTime? ClosedAt { get; set; }
 
@@ -24,9 +25,9 @@ public class Ticket : AuditableEntity
     public CommunicationChannel CommunicationChannel { get; set; } = null!;
     public Actor? AssignedToActor { get; set; }
     public Order? Order { get; set; }
-    public ICollection<TicketMessage> Messages { get; set; } = new List<TicketMessage>();
-    public ICollection<TicketHistory> History { get; set; } = new List<TicketHistory>();
-    public ICollection<ActorNotification> Notifications { get; set; } = new List<ActorNotification>();
+    public ICollection<TicketMessage> Messages { get; set; } = [];
+    public ICollection<TicketSnapshot> Snapshots { get; set; } = [];
+    public ICollection<ActorNotification> Notifications { get; set; } = [];
 
     // return_request
     // attachment

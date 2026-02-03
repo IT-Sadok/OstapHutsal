@@ -9,5 +9,5 @@ public class TicketCategory : BaseEntity<Guid>
     public string Name { get; set; } = null!;
     public string? Description { get; set; }
 
-    public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
+    public ICollection<Ticket> Tickets { get; set; } = [];
 }

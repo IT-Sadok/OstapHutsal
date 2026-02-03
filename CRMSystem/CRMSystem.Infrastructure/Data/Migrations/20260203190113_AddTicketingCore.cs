@@ -32,8 +32,7 @@ namespace CRMSystem.Infrastructure.Data.Migrations
                     OrderNumber = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
                     Price = table.Column<decimal>(type: "numeric(16,2)", precision: 16, scale: 2, nullable: true),
                     Status = table.Column<int>(type: "integer", nullable: false),
-                    ClientId = table.Column<Guid>(type: "uuid", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    ClientId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -80,6 +79,7 @@ namespace CRMSystem.Infrastructure.Data.Migrations
                     Title = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
                     Status = table.Column<int>(type: "integer", nullable: false),
+                    Version = table.Column<int>(type: "integer", nullable: false),
                     SourceDetails = table.Column<string>(type: "jsonb", nullable: true),
                     ClosedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     ClientId = table.Column<Guid>(type: "uuid", nullable: false),
@@ -141,8 +141,7 @@ namespace CRMSystem.Infrastructure.Data.Migrations
                     Payload = table.Column<string>(type: "jsonb", nullable: true),
                     ReadState = table.Column<int>(type: "integer", nullable: false),
                     TicketId = table.Column<Guid>(type: "uuid", nullable: true),
-                    ActorId = table.Column<Guid>(type: "uuid", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    ActorId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -162,37 +161,6 @@ namespace CRMSystem.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ticket_history",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    EventType = table.Column<int>(type: "integer", nullable: false),
-                    FieldName = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true),
-                    OldValue = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
-                    NewValue = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
-                    Metadata = table.Column<string>(type: "jsonb", nullable: true),
-                    TicketId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ActorId = table.Column<Guid>(type: "uuid", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ticket_history", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ticket_history_actors_ActorId",
-                        column: x => x.ActorId,
-                        principalTable: "actors",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.SetNull);
-                    table.ForeignKey(
-                        name: "FK_ticket_history_tickets_TicketId",
-                        column: x => x.TicketId,
-                        principalTable: "tickets",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ticket_messages",
                 columns: table => new
                 {
@@ -202,7 +170,6 @@ namespace CRMSystem.Infrastructure.Data.Migrations
                     TicketId = table.Column<Guid>(type: "uuid", nullable: false),
                     ChannelId = table.Column<Guid>(type: "uuid", nullable: false),
                     SenderActorId = table.Column<Guid>(type: "uuid", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
@@ -222,6 +189,33 @@ namespace CRMSystem.Infrastructure.Data.Migrations
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ticket_messages_tickets_TicketId",
+                        column: x => x.TicketId,
+                        principalTable: "tickets",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ticket_snapshots",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Version = table.Column<int>(type: "integer", nullable: false),
+                    PayloadJson = table.Column<string>(type: "jsonb", nullable: false),
+                    TicketId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ChangedByActorId = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ticket_snapshots", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ticket_snapshots_actors_ChangedByActorId",
+                        column: x => x.ChangedByActorId,
+                        principalTable: "actors",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_ticket_snapshots_tickets_TicketId",
                         column: x => x.TicketId,
                         principalTable: "tickets",
                         principalColumn: "Id",
@@ -279,16 +273,6 @@ namespace CRMSystem.Infrastructure.Data.Migrations
                 column: "Type");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ticket_history_ActorId",
-                table: "ticket_history",
-                column: "ActorId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ticket_history_TicketId",
-                table: "ticket_history",
-                column: "TicketId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ticket_messages_ChannelId",
                 table: "ticket_messages",
                 column: "ChannelId");
@@ -307,6 +291,17 @@ namespace CRMSystem.Infrastructure.Data.Migrations
                 name: "IX_ticket_messages_TicketId",
                 table: "ticket_messages",
                 column: "TicketId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ticket_snapshots_ChangedByActorId",
+                table: "ticket_snapshots",
+                column: "ChangedByActorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ticket_snapshots_TicketId_Version",
+                table: "ticket_snapshots",
+                columns: new[] { "TicketId", "Version" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_tickets_AssignedToActorId",
@@ -356,10 +351,10 @@ namespace CRMSystem.Infrastructure.Data.Migrations
                 name: "agent_notifications");
 
             migrationBuilder.DropTable(
-                name: "ticket_history");
+                name: "ticket_messages");
 
             migrationBuilder.DropTable(
-                name: "ticket_messages");
+                name: "ticket_snapshots");
 
             migrationBuilder.DropTable(
                 name: "tickets");

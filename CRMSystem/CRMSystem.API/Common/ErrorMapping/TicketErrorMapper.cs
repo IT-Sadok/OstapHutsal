@@ -1,16 +1,21 @@
-﻿using CRMSystem.Application.Features.Tickets;
+﻿using CRMSystem.Application.Common.Errors;
+using CRMSystem.Application.Features.Tickets;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CRMSystem.API.Common.ErrorMapping;
 
 public static class TicketErrorMapper
 {
-    public static IResult ToHttpResult(string errorCode) =>
-        errorCode switch
+    public static IResult ToHttpResult(string errorCode)
+    {
+        var commonResult = CommonErrorMapper.TryMap(errorCode);
+        if (commonResult is not null)
         {
-            TicketErrorCodes.TicketNotFound =>
-                Problem(errorCode, StatusCodes.Status404NotFound, "Ticket not found."),
+            return commonResult;
+        }
 
+        var featureResult = errorCode switch
+        {
             TicketErrorCodes.InvalidCategory =>
                 Problem(errorCode, StatusCodes.Status400BadRequest, "Invalid ticket category."),
 
@@ -19,6 +24,13 @@ public static class TicketErrorMapper
 
             TicketErrorCodes.InvalidChannel =>
                 Problem(errorCode, StatusCodes.Status400BadRequest, "Invalid communication channel."),
+
+            TicketErrorCodes.TicketAlreadyClosed =>
+                Problem(errorCode, StatusCodes.Status409Conflict, "Ticket is already closed."),
+
+            TicketErrorCodes.ForbiddenAssignToOther =>
+                Problem(errorCode, StatusCodes.Status403Forbidden,
+                    "You are not allowed to assign this ticket to another agent."),
 
             TicketErrorCodes.AssigningAgentFailed =>
                 Problem(errorCode, StatusCodes.Status409Conflict, "Failed to assign ticket to agent."),
@@ -29,33 +41,25 @@ public static class TicketErrorMapper
             TicketErrorCodes.NotificationCreationFailed =>
                 Problem(errorCode, StatusCodes.Status500InternalServerError, "Failed to create notification."),
 
-            TicketErrorCodes.TicketAlreadyClosed =>
-                Problem(errorCode, StatusCodes.Status409Conflict, "Ticket is already closed."),
-
-            TicketErrorCodes.UnauthorizedAction =>
-                Problem(errorCode, StatusCodes.Status401Unauthorized, "You are not authorized to perform this action."),
-
-            TicketErrorCodes.ActorNotFound =>
-                Problem(errorCode, StatusCodes.Status404NotFound, "Actor not found."),
-
-            TicketErrorCodes.ForbiddenAssignToOther =>
-                Problem(errorCode, StatusCodes.Status403Forbidden,
-                    "You are not allowed to assign this ticket to another agent."),
-
-            TicketErrorCodes.ClientNotFoundForActor =>
-                Problem(errorCode, StatusCodes.Status404NotFound, "Client for actor is not found."),
-
-            _ => Problem("unknown", StatusCodes.Status500InternalServerError, "Unknown ticket error.")
+            _ => null
         };
 
-    private static IResult Problem(string code, int statusCode, string title)
-    {
-        return Results.Problem(
+        if (featureResult is not null)
+        {
+            return featureResult;
+        }
+
+        return Problem(CommonErrorCodes.InternalError,
+            StatusCodes.Status500InternalServerError,
+            "Unknown ticket error.");
+    }
+
+    private static IResult Problem(string code, int statusCode, string title) =>
+        Results.Problem(
             title: title,
             statusCode: statusCode,
             extensions: new Dictionary<string, object?>
             {
                 ["code"] = code
             });
-    }
 }

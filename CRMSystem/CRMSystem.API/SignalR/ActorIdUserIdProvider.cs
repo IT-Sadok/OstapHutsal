@@ -6,8 +6,16 @@ namespace CRMSystem.API.SignalR;
 
 public sealed class ActorIdUserIdProvider : IUserIdProvider
 {
+    private readonly IUserContextProvider _userContextProvider;
+
+    public ActorIdUserIdProvider(IUserContextProvider userContextProvider)
+    {
+        _userContextProvider = userContextProvider;
+    }
+
     public string? GetUserId(HubConnectionContext connection)
     {
-        return connection.User.FindFirst(AppClaimTypes.ActorId)?.Value;
+        var userContext = _userContextProvider.FromHttpContext();
+        return userContext?.ActorId.ToString();
     }
 }

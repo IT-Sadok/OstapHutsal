@@ -5,6 +5,7 @@ using CRMSystem.Application.Abstractions.Persistence;
 using CRMSystem.Application.Abstractions.Security;
 using CRMSystem.Application.Abstractions.Services;
 using CRMSystem.Application.Common.Authorization;
+using CRMSystem.Application.Common.Security;
 using CRMSystem.Application.Identity;
 using CRMSystem.Application.SignalR.Protocol;
 using Microsoft.AspNetCore.Identity;
@@ -12,6 +13,7 @@ using CRMSystem.Infrastructure.Data;
 using CRMSystem.Infrastructure.DomainEvents;
 using CRMSystem.Infrastructure.Options;
 using CRMSystem.Infrastructure.Security.Jwt;
+using CRMSystem.Infrastructure.Security.UserContextProviders;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -149,6 +151,8 @@ public static class InfrastructureExtensions
             .WithScopedLifetime());
 
         services.AddScoped<IIdentityService, IdentityService>();
+        services.AddSingleton<IUserContextProvider, UserContextProvider>();
+
         services.AddTransient<IJwtTokenProvider, JwtTokenProvider>();
         services.AddTransient<IDomainEventsDispatcher, DomainEventsDispatcher>();
     }

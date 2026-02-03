@@ -13,7 +13,7 @@ public class Order : CreatableEntity
     public Guid ClientId { get; set; }
 
     public Client Client { get; set; } = null!;
-    public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
+    public ICollection<Ticket> Tickets { get; set; } = [];
 
     // return_request
 }

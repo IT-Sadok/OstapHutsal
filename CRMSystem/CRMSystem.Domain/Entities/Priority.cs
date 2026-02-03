@@ -7,5 +7,5 @@ public class Priority : BaseEntity<Guid>
 {
     public PriorityType Type { get; set; }
 
-    public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
+    public ICollection<Ticket> Tickets { get; set; } = [];
 }

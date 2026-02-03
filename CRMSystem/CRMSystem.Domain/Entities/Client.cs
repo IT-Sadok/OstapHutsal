@@ -11,6 +11,6 @@ public class Client : BaseEntity<Guid>
 
     public Guid ActorId { get; set; }
     public Actor Actor { get; set; } = null!;
-    public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
-    public ICollection<Order> Orders { get; set; } = new List<Order>();
+    public ICollection<Ticket> Tickets { get; set; } = [];
+    public ICollection<Order> Orders { get; set; } = [];
 }

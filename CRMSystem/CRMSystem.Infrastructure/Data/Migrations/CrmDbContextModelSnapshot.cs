@@ -158,7 +158,7 @@ namespace CRMSystem.Infrastructure.Data.Migrations
                     b.ToTable("actors", (string)null);
                 });
 
-            modelBuilder.Entity("CRMSystem.Domain.Entities.Agent", b =>
+            modelBuilder.Entity("CRMSystem.Domain.Entities.ActorNotification", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -166,29 +166,6 @@ namespace CRMSystem.Infrastructure.Data.Migrations
 
                     b.Property<Guid>("ActorId")
                         .HasColumnType("uuid");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ActorId")
-                        .IsUnique();
-
-                    b.ToTable("agents", (string)null);
-                });
-
-            modelBuilder.Entity("CRMSystem.Domain.Entities.AgentNotification", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ActorId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Payload")
                         .HasColumnType("jsonb");
@@ -209,6 +186,26 @@ namespace CRMSystem.Infrastructure.Data.Migrations
                     b.HasIndex("TicketId");
 
                     b.ToTable("agent_notifications", (string)null);
+                });
+
+            modelBuilder.Entity("CRMSystem.Domain.Entities.Agent", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ActorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActorId")
+                        .IsUnique();
+
+                    b.ToTable("agents", (string)null);
                 });
 
             modelBuilder.Entity("CRMSystem.Domain.Entities.Client", b =>
@@ -275,9 +272,6 @@ namespace CRMSystem.Infrastructure.Data.Migrations
 
                     b.Property<Guid>("ClientId")
                         .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("OrderNumber")
                         .IsRequired()
@@ -365,6 +359,9 @@ namespace CRMSystem.Infrastructure.Data.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("Version")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AssignedToActorId");
@@ -411,48 +408,6 @@ namespace CRMSystem.Infrastructure.Data.Migrations
                     b.ToTable("ticket_categories", (string)null);
                 });
 
-            modelBuilder.Entity("CRMSystem.Domain.Entities.TicketHistory", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("ActorId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("EventType")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("FieldName")
-                        .HasMaxLength(128)
-                        .HasColumnType("character varying(128)");
-
-                    b.Property<string>("Metadata")
-                        .HasColumnType("jsonb");
-
-                    b.Property<string>("NewValue")
-                        .HasMaxLength(512)
-                        .HasColumnType("character varying(512)");
-
-                    b.Property<string>("OldValue")
-                        .HasMaxLength(512)
-                        .HasColumnType("character varying(512)");
-
-                    b.Property<Guid>("TicketId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ActorId");
-
-                    b.HasIndex("TicketId");
-
-                    b.ToTable("ticket_history", (string)null);
-                });
-
             modelBuilder.Entity("CRMSystem.Domain.Entities.TicketMessage", b =>
                 {
                     b.Property<Guid>("Id")
@@ -461,9 +416,6 @@ namespace CRMSystem.Infrastructure.Data.Migrations
 
                     b.Property<Guid>("ChannelId")
                         .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("MessageType")
                         .HasColumnType("integer");
@@ -491,6 +443,35 @@ namespace CRMSystem.Infrastructure.Data.Migrations
                     b.HasIndex("TicketId");
 
                     b.ToTable("ticket_messages", (string)null);
+                });
+
+            modelBuilder.Entity("CRMSystem.Domain.Entities.TicketSnapshot", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("ChangedByActorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("PayloadJson")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.Property<Guid>("TicketId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChangedByActorId");
+
+                    b.HasIndex("TicketId", "Version")
+                        .IsUnique();
+
+                    b.ToTable("ticket_snapshots", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -607,18 +588,7 @@ namespace CRMSystem.Infrastructure.Data.Migrations
                     b.Navigation("Actor");
                 });
 
-            modelBuilder.Entity("CRMSystem.Domain.Entities.Agent", b =>
-                {
-                    b.HasOne("CRMSystem.Domain.Entities.Actor", "Actor")
-                        .WithOne("Agent")
-                        .HasForeignKey("CRMSystem.Domain.Entities.Agent", "ActorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Actor");
-                });
-
-            modelBuilder.Entity("CRMSystem.Domain.Entities.AgentNotification", b =>
+            modelBuilder.Entity("CRMSystem.Domain.Entities.ActorNotification", b =>
                 {
                     b.HasOne("CRMSystem.Domain.Entities.Actor", "Actor")
                         .WithMany("Notifications")
@@ -634,6 +604,17 @@ namespace CRMSystem.Infrastructure.Data.Migrations
                     b.Navigation("Actor");
 
                     b.Navigation("Ticket");
+                });
+
+            modelBuilder.Entity("CRMSystem.Domain.Entities.Agent", b =>
+                {
+                    b.HasOne("CRMSystem.Domain.Entities.Actor", "Actor")
+                        .WithOne("Agent")
+                        .HasForeignKey("CRMSystem.Domain.Entities.Agent", "ActorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Actor");
                 });
 
             modelBuilder.Entity("CRMSystem.Domain.Entities.Client", b =>
@@ -707,24 +688,6 @@ namespace CRMSystem.Infrastructure.Data.Migrations
                     b.Navigation("Priority");
                 });
 
-            modelBuilder.Entity("CRMSystem.Domain.Entities.TicketHistory", b =>
-                {
-                    b.HasOne("CRMSystem.Domain.Entities.Actor", "Actor")
-                        .WithMany("History")
-                        .HasForeignKey("ActorId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.HasOne("CRMSystem.Domain.Entities.Ticket", "Ticket")
-                        .WithMany("History")
-                        .HasForeignKey("TicketId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Actor");
-
-                    b.Navigation("Ticket");
-                });
-
             modelBuilder.Entity("CRMSystem.Domain.Entities.TicketMessage", b =>
                 {
                     b.HasOne("CRMSystem.Domain.Entities.CommunicationChannel", "CommunicationChannel")
@@ -748,6 +711,24 @@ namespace CRMSystem.Infrastructure.Data.Migrations
                     b.Navigation("CommunicationChannel");
 
                     b.Navigation("SenderActor");
+
+                    b.Navigation("Ticket");
+                });
+
+            modelBuilder.Entity("CRMSystem.Domain.Entities.TicketSnapshot", b =>
+                {
+                    b.HasOne("CRMSystem.Domain.Entities.Actor", "ChangedByActor")
+                        .WithMany("Snapshots")
+                        .HasForeignKey("ChangedByActorId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("CRMSystem.Domain.Entities.Ticket", "Ticket")
+                        .WithMany("Snapshots")
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ChangedByActor");
 
                     b.Navigation("Ticket");
                 });
@@ -809,11 +790,11 @@ namespace CRMSystem.Infrastructure.Data.Migrations
 
                     b.Navigation("Client");
 
-                    b.Navigation("History");
-
                     b.Navigation("Messages");
 
                     b.Navigation("Notifications");
+
+                    b.Navigation("Snapshots");
 
                     b.Navigation("Tickets");
                 });
@@ -844,11 +825,11 @@ namespace CRMSystem.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("CRMSystem.Domain.Entities.Ticket", b =>
                 {
-                    b.Navigation("History");
-
                     b.Navigation("Messages");
 
                     b.Navigation("Notifications");
+
+                    b.Navigation("Snapshots");
                 });
 
             modelBuilder.Entity("CRMSystem.Domain.Entities.TicketCategory", b =>

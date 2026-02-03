@@ -1,6 +1,4 @@
-﻿using System.Security.Claims;
-using CRMSystem.API.Common.ErrorMapping;
-using CRMSystem.API.Common.Extensions;
+﻿using CRMSystem.API.Common.ErrorMapping;
 using CRMSystem.API.Common.Routes;
 using CRMSystem.Application.Abstractions.Services;
 using CRMSystem.Application.Common.Authorization;
@@ -16,20 +14,13 @@ public static class TicketsEndpoints
         var ticketsGroup = app.MapGroup(TicketsRoutes.Base);
 
         ticketsGroup.MapPost(TicketsRoutes.CreateForCurrentClient, async (
-                HttpContext http,
                 [FromBody] CreateTicketRequest request,
                 [FromServices] ITicketService ticketService,
                 CancellationToken cancellationToken
             ) =>
             {
-                var actorResult = http.User.GetActorId();
-                if (!actorResult.IsSuccess)
-                {
-                    return TicketErrorMapper.ToHttpResult(actorResult.ErrorCode);
-                }
-
                 var ticketCreationResult =
-                    await ticketService.CreateAsync(actorResult.Value, request, cancellationToken: cancellationToken);
+                    await ticketService.CreateAsync(request, cancellationToken: cancellationToken);
 
                 var location = $"{TicketsRoutes.Base}/{ticketCreationResult.Value}";
 
@@ -52,14 +43,8 @@ public static class TicketsEndpoints
                 CancellationToken cancellationToken
             ) =>
             {
-                var actorResult = http.User.GetActorId();
-                if (!actorResult.IsSuccess)
-                {
-                    return TicketErrorMapper.ToHttpResult(actorResult.ErrorCode);
-                }
-
                 var ticketCreationResult =
-                    await ticketService.CreateAsync(actorResult.Value, request, clientId, cancellationToken);
+                    await ticketService.CreateAsync(request, clientId, cancellationToken);
 
                 var location = $"{TicketsRoutes.Base}/{ticketCreationResult.Value}";
 
@@ -81,16 +66,8 @@ public static class TicketsEndpoints
             [FromServices] ITicketService ticketService,
             CancellationToken ct) =>
         {
-            var user = http.User;
-
-            var actorResult = user.GetActorId();
-            if (!actorResult.IsSuccess)
-                return TicketErrorMapper.ToHttpResult(actorResult.ErrorCode);
-
-            var isAdmin = user.IsInRole(Roles.Admin) || user.IsInRole(Roles.SuperAdmin);
-
             var result = await ticketService.SetAssigneeAsync(
-                ticketId, actorResult.Value, isAdmin, request, ct);
+                ticketId, request, ct);
 
             return result.IsSuccess
                 ? Results.NoContent()

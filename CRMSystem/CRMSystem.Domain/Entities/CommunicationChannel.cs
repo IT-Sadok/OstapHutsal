@@ -8,6 +8,6 @@ public class CommunicationChannel : BaseEntity<Guid>
     public ChannelType ChannelType { get; set; }
     public string? Description { get; set; }
 
-    public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
-    public ICollection<TicketMessage> Messages { get; set; } = new List<TicketMessage>();
+    public ICollection<Ticket> Tickets { get; set; } = [];
+    public ICollection<TicketMessage> Messages { get; set; } = [];
 }
