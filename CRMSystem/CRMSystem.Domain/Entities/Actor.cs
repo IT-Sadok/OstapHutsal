@@ -3,14 +3,17 @@ using CRMSystem.Domain.Enums;
 
 namespace CRMSystem.Domain.Entities;
 
-public class Actor: BaseEntity<Guid>
+public class Actor : BaseEntity<Guid>
 {
     public ActorKind Kind { get; internal set; }
-    
+
     public Agent? Agent { get; internal set; }
     public Client? Client { get; internal set; }
-    
-    // ticket_message
-    // ticket_history
+    public ICollection<Ticket> Tickets { get; set; } = [];
+    public ICollection<TicketMessage> Messages { get; set; } = [];
+    public ICollection<TicketSnapshot> Snapshots { get; set; } = [];
+    public ICollection<ActorNotification> Notifications { get; set; } = [];
+
     // attachment
+    // canned_response
 }

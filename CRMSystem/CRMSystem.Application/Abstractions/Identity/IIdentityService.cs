@@ -1,7 +1,7 @@
 ﻿using Common;
-using CRMSystem.Application.Auth.Contracts;
-using CRMSystem.Application.Auth.Models;
 using CRMSystem.Application.Common;
+using CRMSystem.Application.Features.Auth.Contracts;
+using CRMSystem.Application.Features.Auth.Models;
 
 namespace CRMSystem.Application.Abstractions.Identity;
 

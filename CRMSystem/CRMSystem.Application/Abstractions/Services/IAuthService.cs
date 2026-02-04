@@ -1,6 +1,6 @@
 ﻿using Common;
-using CRMSystem.Application.Auth.Contracts;
 using CRMSystem.Application.Common;
+using CRMSystem.Application.Features.Auth.Contracts;
 
 namespace CRMSystem.Application.Abstractions.Services;
 

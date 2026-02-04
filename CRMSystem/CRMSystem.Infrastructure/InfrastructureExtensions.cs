@@ -1,21 +1,25 @@
 ﻿using System.Text;
+using CRMSystem.Application.Abstractions.DomainEvents;
 using CRMSystem.Application.Abstractions.Identity;
 using CRMSystem.Application.Abstractions.Persistence;
-using CRMSystem.Application.Abstractions.Persistence.Repositories;
+using CRMSystem.Application.Abstractions.Security;
 using CRMSystem.Application.Abstractions.Services;
 using CRMSystem.Application.Common.Authorization;
+using CRMSystem.Application.Common.Security;
 using CRMSystem.Application.Identity;
+using CRMSystem.Application.SignalR.Protocol;
 using Microsoft.AspNetCore.Identity;
 using CRMSystem.Infrastructure.Data;
+using CRMSystem.Infrastructure.DomainEvents;
 using CRMSystem.Infrastructure.Options;
-using CRMSystem.Infrastructure.Repositories;
 using CRMSystem.Infrastructure.Security.Jwt;
+using CRMSystem.Infrastructure.Security.UserContextProviders;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-
+using Scrutor;
 
 namespace CRMSystem.Infrastructure;
 
@@ -92,6 +96,23 @@ public static class InfrastructureExtensions
                     IssuerSigningKey =
                         new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SecretKey))
                 };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query[SignalRQueryParameters.AccessToken];
+                        var path = context.HttpContext.Request.Path;
+
+                        if (!string.IsNullOrEmpty(accessToken) &&
+                            path.StartsWithSegments(HubRoutes.Notifications))
+                        {
+                            context.Token = accessToken;
+                        }
+
+                        return Task.CompletedTask;
+                    }
+                };
             });
     }
 
@@ -104,17 +125,36 @@ public static class InfrastructureExtensions
 
             options.AddPolicy(Policies.SuperAdmin, policy =>
                 policy.RequireRole(Roles.SuperAdmin));
+
+            options.AddPolicy(Policies.Client, policy =>
+                policy.RequireRole(Roles.Client));
+
+            options.AddPolicy(Policies.Operator, policy =>
+                policy.RequireRole(Roles.Operator));
+
+            options.AddPolicy(Policies.OperatorOrAdmin, p =>
+                p.RequireRole(Roles.Operator, Roles.Admin, Roles.SuperAdmin));
         });
     }
 
     private static void AddInfrastructureRegistrations(this IServiceCollection services)
     {
         services.AddScoped<IUnitOfWork, UnitOfWork>();
-        services.AddScoped<IActorRepository, ActorRepository>();
-        services.AddScoped<IClientRepository, ClientRepository>();
-        services.AddScoped<IAgentRepository, AgentRepository>();
+
+        services.Scan(scan => scan
+            .FromAssemblies(typeof(InfrastructureExtensions).Assembly)
+            .AddClasses(
+                filter => filter.Where(x => x.Name.EndsWith("Repository")),
+                publicOnly: false)
+            .UsingRegistrationStrategy(RegistrationStrategy.Throw)
+            .AsMatchingInterface()
+            .WithScopedLifetime());
+
         services.AddScoped<IIdentityService, IdentityService>();
-        services.AddTransient<IJwtTokenProvider, JwtTokenProvider>();
+        services.AddScoped<IUserContextProvider, UserContextProvider>();
+
+        services.AddScoped<IJwtTokenProvider, JwtTokenProvider>();
+        services.AddTransient<IDomainEventsDispatcher, DomainEventsDispatcher>();
     }
 
     private static void ConfigureOptions(this IServiceCollection services,

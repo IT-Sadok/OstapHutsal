@@ -7,9 +7,6 @@ public class Agent : BaseEntity<Guid>
 {
     public AgentStatus Status { get; set; }
     public Guid ActorId { get; set; }
-    public Actor Actor { get; set; } = null!;
 
-    // canned_response
-    // ticket
-    // notification
+    public Actor Actor { get; set; } = null!;
 }

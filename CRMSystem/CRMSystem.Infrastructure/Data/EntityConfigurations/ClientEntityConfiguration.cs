@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CRMSystem.Infrastructure.Data.EntityConfigurations;
 
-public class ClientEntityConfiguration: IEntityTypeConfiguration<Client>
+public class ClientEntityConfiguration : IEntityTypeConfiguration<Client>
 {
     public void Configure(EntityTypeBuilder<Client> builder)
     {
@@ -21,12 +21,14 @@ public class ClientEntityConfiguration: IEntityTypeConfiguration<Client>
 
         builder.Property(c => c.ExternalId)
             .HasMaxLength(128);
-        
+
         builder.Property(c => c.ActorId)
             .IsRequired();
 
         builder.HasIndex(c => c.ActorId)
             .IsUnique();
+
+        builder.HasIndex(c => c.Phone).IsUnique();
 
         builder.HasOne(c => c.Actor)
             .WithOne(a => a.Client)

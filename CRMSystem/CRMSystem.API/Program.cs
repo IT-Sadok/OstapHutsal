@@ -15,6 +15,7 @@ public static class Program
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
+        builder.Services.ConfigureSignalR();
 
         builder.Services.AddApplication()
             .AddInfrastructure(builder.Configuration);
@@ -37,6 +38,8 @@ public static class Program
         app.UseAuthorization();
 
         app.MapEndpoints();
+
+        app.MapSignalRHubs();
 
         // temporary endpoint
         app.MapDelete("/resources/delete", async (

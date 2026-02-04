@@ -1,9 +1,7 @@
 ﻿using Common;
-using CRMSystem.Application.Auth.Models;
-using CRMSystem.Application.Common;
-using CRMSystem.Domain.Entities;
+using CRMSystem.Application.Features.Auth.Models;
 
-namespace CRMSystem.Application.Abstractions.Services;
+namespace CRMSystem.Application.Abstractions.Security;
 
 public interface IJwtTokenProvider
 {

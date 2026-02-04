@@ -129,6 +129,9 @@ namespace CRMSystem.Infrastructure.Data.Migrations
                     b.HasIndex("ActorId")
                         .IsUnique();
 
+                    b.HasIndex("Email")
+                        .IsUnique();
+
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -153,6 +156,36 @@ namespace CRMSystem.Infrastructure.Data.Migrations
                     b.HasIndex("Kind");
 
                     b.ToTable("actors", (string)null);
+                });
+
+            modelBuilder.Entity("CRMSystem.Domain.Entities.ActorNotification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ActorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Payload")
+                        .HasColumnType("jsonb");
+
+                    b.Property<int>("ReadState")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("TicketId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActorId");
+
+                    b.HasIndex("TicketId");
+
+                    b.ToTable("agent_notifications", (string)null);
                 });
 
             modelBuilder.Entity("CRMSystem.Domain.Entities.Agent", b =>
@@ -204,7 +237,241 @@ namespace CRMSystem.Infrastructure.Data.Migrations
                     b.HasIndex("ActorId")
                         .IsUnique();
 
+                    b.HasIndex("Phone")
+                        .IsUnique();
+
                     b.ToTable("clients", (string)null);
+                });
+
+            modelBuilder.Entity("CRMSystem.Domain.Entities.CommunicationChannel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("ChannelType")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChannelType")
+                        .IsUnique();
+
+                    b.ToTable("communication_channels", (string)null);
+                });
+
+            modelBuilder.Entity("CRMSystem.Domain.Entities.Order", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ClientId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("OrderNumber")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<decimal?>("Price")
+                        .HasPrecision(16, 2)
+                        .HasColumnType("numeric(16,2)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClientId");
+
+                    b.HasIndex("OrderNumber")
+                        .IsUnique();
+
+                    b.ToTable("orders", (string)null);
+                });
+
+            modelBuilder.Entity("CRMSystem.Domain.Entities.Priority", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Type")
+                        .IsUnique();
+
+                    b.ToTable("priorities", (string)null);
+                });
+
+            modelBuilder.Entity("CRMSystem.Domain.Entities.Ticket", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("AssignedToActorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ChannelId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ClientId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("ClosedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("OrderId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("PriorityId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("SourceDetails")
+                        .HasColumnType("jsonb");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssignedToActorId");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("ChannelId");
+
+                    b.HasIndex("ClientId");
+
+                    b.HasIndex("CreatedAt");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("PriorityId");
+
+                    b.HasIndex("Status");
+
+                    b.ToTable("tickets", (string)null);
+                });
+
+            modelBuilder.Entity("CRMSystem.Domain.Entities.TicketCategory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Type");
+
+                    b.ToTable("ticket_categories", (string)null);
+                });
+
+            modelBuilder.Entity("CRMSystem.Domain.Entities.TicketMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ChannelId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("MessageType")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("SenderActorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Text")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("TicketId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChannelId");
+
+                    b.HasIndex("MessageType");
+
+                    b.HasIndex("SenderActorId");
+
+                    b.HasIndex("TicketId");
+
+                    b.ToTable("ticket_messages", (string)null);
+                });
+
+            modelBuilder.Entity("CRMSystem.Domain.Entities.TicketSnapshot", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("ChangedByActorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("PayloadJson")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.Property<Guid>("TicketId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChangedByActorId");
+
+                    b.HasIndex("TicketId", "Version")
+                        .IsUnique();
+
+                    b.ToTable("ticket_snapshots", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -321,6 +588,24 @@ namespace CRMSystem.Infrastructure.Data.Migrations
                     b.Navigation("Actor");
                 });
 
+            modelBuilder.Entity("CRMSystem.Domain.Entities.ActorNotification", b =>
+                {
+                    b.HasOne("CRMSystem.Domain.Entities.Actor", "Actor")
+                        .WithMany("Notifications")
+                        .HasForeignKey("ActorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CRMSystem.Domain.Entities.Ticket", "Ticket")
+                        .WithMany("Notifications")
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Actor");
+
+                    b.Navigation("Ticket");
+                });
+
             modelBuilder.Entity("CRMSystem.Domain.Entities.Agent", b =>
                 {
                     b.HasOne("CRMSystem.Domain.Entities.Actor", "Actor")
@@ -341,6 +626,111 @@ namespace CRMSystem.Infrastructure.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Actor");
+                });
+
+            modelBuilder.Entity("CRMSystem.Domain.Entities.Order", b =>
+                {
+                    b.HasOne("CRMSystem.Domain.Entities.Client", "Client")
+                        .WithMany("Orders")
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Client");
+                });
+
+            modelBuilder.Entity("CRMSystem.Domain.Entities.Ticket", b =>
+                {
+                    b.HasOne("CRMSystem.Domain.Entities.Actor", "AssignedToActor")
+                        .WithMany("Tickets")
+                        .HasForeignKey("AssignedToActorId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("CRMSystem.Domain.Entities.TicketCategory", "Category")
+                        .WithMany("Tickets")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CRMSystem.Domain.Entities.CommunicationChannel", "CommunicationChannel")
+                        .WithMany("Tickets")
+                        .HasForeignKey("ChannelId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CRMSystem.Domain.Entities.Client", "Client")
+                        .WithMany("Tickets")
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CRMSystem.Domain.Entities.Order", "Order")
+                        .WithMany("Tickets")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("CRMSystem.Domain.Entities.Priority", "Priority")
+                        .WithMany("Tickets")
+                        .HasForeignKey("PriorityId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("AssignedToActor");
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Client");
+
+                    b.Navigation("CommunicationChannel");
+
+                    b.Navigation("Order");
+
+                    b.Navigation("Priority");
+                });
+
+            modelBuilder.Entity("CRMSystem.Domain.Entities.TicketMessage", b =>
+                {
+                    b.HasOne("CRMSystem.Domain.Entities.CommunicationChannel", "CommunicationChannel")
+                        .WithMany("Messages")
+                        .HasForeignKey("ChannelId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CRMSystem.Domain.Entities.Actor", "SenderActor")
+                        .WithMany("Messages")
+                        .HasForeignKey("SenderActorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CRMSystem.Domain.Entities.Ticket", "Ticket")
+                        .WithMany("Messages")
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CommunicationChannel");
+
+                    b.Navigation("SenderActor");
+
+                    b.Navigation("Ticket");
+                });
+
+            modelBuilder.Entity("CRMSystem.Domain.Entities.TicketSnapshot", b =>
+                {
+                    b.HasOne("CRMSystem.Domain.Entities.Actor", "ChangedByActor")
+                        .WithMany("Snapshots")
+                        .HasForeignKey("ChangedByActorId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("CRMSystem.Domain.Entities.Ticket", "Ticket")
+                        .WithMany("Snapshots")
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ChangedByActor");
+
+                    b.Navigation("Ticket");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -399,6 +789,52 @@ namespace CRMSystem.Infrastructure.Data.Migrations
                     b.Navigation("Agent");
 
                     b.Navigation("Client");
+
+                    b.Navigation("Messages");
+
+                    b.Navigation("Notifications");
+
+                    b.Navigation("Snapshots");
+
+                    b.Navigation("Tickets");
+                });
+
+            modelBuilder.Entity("CRMSystem.Domain.Entities.Client", b =>
+                {
+                    b.Navigation("Orders");
+
+                    b.Navigation("Tickets");
+                });
+
+            modelBuilder.Entity("CRMSystem.Domain.Entities.CommunicationChannel", b =>
+                {
+                    b.Navigation("Messages");
+
+                    b.Navigation("Tickets");
+                });
+
+            modelBuilder.Entity("CRMSystem.Domain.Entities.Order", b =>
+                {
+                    b.Navigation("Tickets");
+                });
+
+            modelBuilder.Entity("CRMSystem.Domain.Entities.Priority", b =>
+                {
+                    b.Navigation("Tickets");
+                });
+
+            modelBuilder.Entity("CRMSystem.Domain.Entities.Ticket", b =>
+                {
+                    b.Navigation("Messages");
+
+                    b.Navigation("Notifications");
+
+                    b.Navigation("Snapshots");
+                });
+
+            modelBuilder.Entity("CRMSystem.Domain.Entities.TicketCategory", b =>
+                {
+                    b.Navigation("Tickets");
                 });
 #pragma warning restore 612, 618
         }

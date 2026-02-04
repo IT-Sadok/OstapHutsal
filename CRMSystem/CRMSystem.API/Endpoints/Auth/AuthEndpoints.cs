@@ -1,8 +1,9 @@
 ﻿using CRMSystem.API.Common.ErrorMapping;
 using CRMSystem.API.Common.Routes;
 using CRMSystem.Application.Abstractions.Services;
-using CRMSystem.Application.Auth.Contracts;
 using CRMSystem.Application.Common.Authorization;
+using CRMSystem.Application.Features.Auth.Contracts;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CRMSystem.API.Endpoints.Auth;
 
@@ -10,11 +11,12 @@ public static class AuthEndpoints
 {
     public static void MapAuthEndpoints(this WebApplication app)
     {
-        var authGroup = app.MapGroup(AuthRoutes.Base);
+        var authGroup = app.MapGroup(AuthRoutes.Base)
+            .WithTags(AuthRoutes.Base);
 
         authGroup.MapPost(AuthRoutes.Login, async (
-                IAuthService authService,
-                LoginRequest request,
+                [FromServices] IAuthService authService,
+                [FromBody] LoginRequest request,
                 CancellationToken cancellationToken) =>
             {
                 var result = await authService.LoginAsync(request, cancellationToken);
@@ -27,8 +29,8 @@ public static class AuthEndpoints
             .WithOpenApi();
 
         authGroup.MapPost(AuthRoutes.Clients, async (
-                IAuthService authService,
-                RegisterClientRequest request,
+                [FromServices] IAuthService authService,
+                [FromBody] RegisterClientRequest request,
                 CancellationToken cancellationToken) =>
             {
                 var result = await authService.RegisterClientAsync(request, cancellationToken);
@@ -41,8 +43,8 @@ public static class AuthEndpoints
             .WithOpenApi();
 
         authGroup.MapPost(AuthRoutes.Operators, async (
-                IAuthService authService,
-                RegisterAgentRequest request,
+                [FromServices] IAuthService authService,
+                [FromBody] RegisterAgentRequest request,
                 CancellationToken cancellationToken) =>
             {
                 var result = await authService.RegisterOperatorAsync(request, cancellationToken);
@@ -55,8 +57,8 @@ public static class AuthEndpoints
             .WithOpenApi();
 
         authGroup.MapPost(AuthRoutes.Admins, async (
-                IAuthService authService,
-                RegisterAgentRequest request,
+                [FromServices] IAuthService authService,
+                [FromBody] RegisterAgentRequest request,
                 CancellationToken cancellationToken) =>
             {
                 var result = await authService.RegisterAdminAsync(request, cancellationToken);
