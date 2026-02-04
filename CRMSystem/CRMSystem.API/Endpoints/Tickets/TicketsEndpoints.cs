@@ -1,5 +1,6 @@
 ﻿using CRMSystem.API.Common.ErrorMapping;
 using CRMSystem.API.Common.Routes;
+using CRMSystem.API.Common.Validation;
 using CRMSystem.Application.Abstractions.Services;
 using CRMSystem.Application.Common.Authorization;
 using CRMSystem.Application.Features.Tickets.Contracts;
@@ -33,11 +34,11 @@ public static class TicketsEndpoints
                     })
                     : TicketErrorMapper.ToHttpResult(ticketCreationResult.ErrorCode);
             })
+            .AddEndpointFilter<FluentValidationFilter<CreateTicketRequest>>()
             .RequireAuthorization(Policies.Client)
             .WithOpenApi();
 
         ticketsGroup.MapPost(TicketsRoutes.CreateForClient, async (
-                HttpContext http,
                 [FromRoute] Guid clientId,
                 [FromBody] CreateTicketRequest request,
                 [FromServices] ITicketService ticketService,
@@ -57,6 +58,7 @@ public static class TicketsEndpoints
                     })
                     : TicketErrorMapper.ToHttpResult(ticketCreationResult.ErrorCode);
             })
+            .AddEndpointFilter<FluentValidationFilter<CreateTicketRequest>>()
             .RequireAuthorization(Policies.OperatorOrAdmin)
             .WithOpenApi();
 
@@ -75,10 +77,12 @@ public static class TicketsEndpoints
         };
 
         ticketsGroup.MapPut(TicketsRoutes.Assignee, assigneeEndpoint)
+            .AddEndpointFilter<FluentValidationFilter<AssignTicketRequest>>()
             .RequireAuthorization(Policies.OperatorOrAdmin)
             .WithOpenApi();
 
         ticketsGroup.MapDelete(TicketsRoutes.Assignee, assigneeEndpoint)
+            .AddEndpointFilter<FluentValidationFilter<AssignTicketRequest>>()
             .RequireAuthorization(Policies.Admin)
             .WithOpenApi();
     }

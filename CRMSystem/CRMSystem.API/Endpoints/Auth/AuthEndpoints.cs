@@ -1,5 +1,6 @@
 ﻿using CRMSystem.API.Common.ErrorMapping;
 using CRMSystem.API.Common.Routes;
+using CRMSystem.API.Common.Validation;
 using CRMSystem.Application.Abstractions.Services;
 using CRMSystem.Application.Common.Authorization;
 using CRMSystem.Application.Features.Auth.Contracts;
@@ -25,6 +26,7 @@ public static class AuthEndpoints
                     ? Results.Ok(new LoginResponse(result.Value!))
                     : AuthErrorMapper.ToHttpResult(result.ErrorCode);
             })
+            .AddEndpointFilter<FluentValidationFilter<LoginRequest>>()
             .AllowAnonymous()
             .WithOpenApi();
 
@@ -39,6 +41,7 @@ public static class AuthEndpoints
                     ? Results.Created($"{AuthRoutes.Clients}/{result.Value}", result.Value)
                     : AuthErrorMapper.ToHttpResult(result.ErrorCode);
             })
+            .AddEndpointFilter<FluentValidationFilter<RegisterClientRequest>>()
             .AllowAnonymous()
             .WithOpenApi();
 
@@ -53,6 +56,7 @@ public static class AuthEndpoints
                     ? Results.Created($"{AuthRoutes.Operators}/{result.Value}", result.Value)
                     : AuthErrorMapper.ToHttpResult(result.ErrorCode);
             })
+            .AddEndpointFilter<FluentValidationFilter<RegisterAgentRequest>>()
             .RequireAuthorization(Policies.Admin)
             .WithOpenApi();
 
@@ -67,6 +71,7 @@ public static class AuthEndpoints
                     ? Results.Created($"{AuthRoutes.Admins}/{result.Value}", result.Value)
                     : AuthErrorMapper.ToHttpResult(result.ErrorCode);
             })
+            .AddEndpointFilter<FluentValidationFilter<RegisterAgentRequest>>()
             .RequireAuthorization(Policies.SuperAdmin)
             .WithOpenApi();
     }
