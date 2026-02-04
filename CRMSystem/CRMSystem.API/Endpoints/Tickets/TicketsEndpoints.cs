@@ -11,7 +11,8 @@ public static class TicketsEndpoints
 {
     public static void MapTicketsEndpoints(this WebApplication app)
     {
-        var ticketsGroup = app.MapGroup(TicketsRoutes.Base);
+        var ticketsGroup = app.MapGroup(TicketsRoutes.Base)
+            .WithTags(TicketsRoutes.Base);
 
         ticketsGroup.MapPost(TicketsRoutes.CreateForCurrentClient, async (
                 [FromBody] CreateTicketRequest request,
@@ -60,7 +61,6 @@ public static class TicketsEndpoints
             .WithOpenApi();
 
         var assigneeEndpoint = async (
-            HttpContext http,
             [FromRoute] Guid ticketId,
             [FromBody] AssignTicketRequest request,
             [FromServices] ITicketService ticketService,

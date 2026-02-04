@@ -11,7 +11,8 @@ public static class AuthEndpoints
 {
     public static void MapAuthEndpoints(this WebApplication app)
     {
-        var authGroup = app.MapGroup(AuthRoutes.Base);
+        var authGroup = app.MapGroup(AuthRoutes.Base)
+            .WithTags(AuthRoutes.Base);
 
         authGroup.MapPost(AuthRoutes.Login, async (
                 [FromServices] IAuthService authService,

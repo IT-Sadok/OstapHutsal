@@ -151,9 +151,9 @@ public static class InfrastructureExtensions
             .WithScopedLifetime());
 
         services.AddScoped<IIdentityService, IdentityService>();
-        services.AddSingleton<IUserContextProvider, UserContextProvider>();
+        services.AddScoped<IUserContextProvider, UserContextProvider>();
 
-        services.AddTransient<IJwtTokenProvider, JwtTokenProvider>();
+        services.AddScoped<IJwtTokenProvider, JwtTokenProvider>();
         services.AddTransient<IDomainEventsDispatcher, DomainEventsDispatcher>();
     }
 
