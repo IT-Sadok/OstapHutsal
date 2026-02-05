@@ -107,7 +107,7 @@ public class TicketService : ITicketService
 
         if (userContext is null)
         {
-            return Result<Guid>.Failure(CommonErrorCodes.Unauthorized);
+            return Result.Failure(CommonErrorCodes.Unauthorized);
         }
 
         var performedBy = await _actorRepository.GetByIdAsync(userContext.ActorId, cancellationToken);
@@ -119,7 +119,6 @@ public class TicketService : ITicketService
             return Result.Failure(CommonErrorCodes.NotFound);
 
         var snapshot = TicketSnapshotFactory.Create(ticket, userContext.ActorId);
-        await _ticketSnapshotRepository.AddAsync(snapshot, cancellationToken);
 
         if (request.AssignToActorId is null)
         {
@@ -164,7 +163,9 @@ public class TicketService : ITicketService
             oldAssigneeActorId
         );
 
+        await _ticketSnapshotRepository.AddAsync(snapshot, cancellationToken);
         ticket.Version++;
+
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         await _domainEventsDispatcher.DispatchAsync([ticketAssigned], cancellationToken);
 

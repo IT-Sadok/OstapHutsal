@@ -2,10 +2,13 @@
 using CRMSystem.API.Endpoints.Tickets;
 using CRMSystem.API.SignalR;
 using CRMSystem.API.SignalR.Hubs;
+using CRMSystem.Application;
 using CRMSystem.Application.Abstractions.SignalR;
+using CRMSystem.Application.Features.Auth;
 using CRMSystem.Application.SignalR.Protocol;
 using CRMSystem.Infrastructure.Data;
 using CRMSystem.Infrastructure.Data.Seeding;
+using FluentValidation;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -74,5 +77,10 @@ public static class WebApplicationExtensions
     public static void MapSignalRHubs(this WebApplication app)
     {
         app.MapHub<NotificationsHub>(HubRoutes.Notifications);
+    }
+
+    public static void AddValidation(this IServiceCollection services)
+    {
+        services.AddValidatorsFromAssembly(typeof(ApplicationExtensions).Assembly);
     }
 }

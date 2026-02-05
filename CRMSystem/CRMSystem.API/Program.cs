@@ -16,7 +16,8 @@ public static class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
         builder.Services.ConfigureSignalR();
-
+        builder.Services.AddValidation();
+        
         builder.Services.AddApplication()
             .AddInfrastructure(builder.Configuration);
 
