@@ -12,11 +12,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{0DBD3CAC-CEF
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{6337EC60-F100-4AEE-B2B8-94FADFF329F6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRMSystem.API.Tests", "CRMSystem.API.Tests\CRMSystem.API.Tests.csproj", "{0FA72276-61E1-441A-BE57-043AECB5B9A1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRMSystem.API.IntegrationTests", "CRMSystem.API.IntegrationTests\CRMSystem.API.IntegrationTests.csproj", "{0FA72276-61E1-441A-BE57-043AECB5B9A1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRMSystem.Application.Tests", "CRMSystem.Application.Tests\CRMSystem.Application.Tests.csproj", "{A420D21D-18DA-4533-AF9D-2AEC9810DB3C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRMSystem.Application.UnitTests", "CRMSystem.Application.UnitTests\CRMSystem.Application.UnitTests.csproj", "{A420D21D-18DA-4533-AF9D-2AEC9810DB3C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRMSystem.Infrastructure.Tests", "CRMSystem.Infrastructure.Tests\CRMSystem.Infrastructure.Tests.csproj", "{F8C28808-D5DE-4168-913A-4A2025921D08}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRMSystem.Infrastructure.UnitTests", "CRMSystem.Infrastructure.UnitTests\CRMSystem.Infrastructure.UnitTests.csproj", "{F8C28808-D5DE-4168-913A-4A2025921D08}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{E9AAA27F-3EC7-46C9-ACEC-E8F4D45EBF33}"
 EndProject
