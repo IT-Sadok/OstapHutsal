@@ -171,4 +171,6 @@ public class TicketService : ITicketService
 
         return Result.Success();
     }
+
+// WARNING: race condition on update
 }

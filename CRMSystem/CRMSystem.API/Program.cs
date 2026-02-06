@@ -6,7 +6,7 @@ using CRMSystem.Infrastructure;
 
 namespace CRMSystem.API;
 
-public static class Program
+public class Program
 {
     public static async Task Main(string[] args)
     {
@@ -17,7 +17,7 @@ public static class Program
         builder.Services.AddSwaggerGen();
         builder.Services.ConfigureSignalR();
         builder.Services.AddValidation();
-        
+
         builder.Services.AddApplication()
             .AddInfrastructure(builder.Configuration);
 
